@@ -1,0 +1,6 @@
+cat > .prettierignore <<'EOF'
+node_modules
+dist
+coverage
+.wrangler
+EOF

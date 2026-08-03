@@ -1,0 +1,12 @@
+cat > .vscode/settings.json <<'EOF'
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "terminal.integrated.defaultProfile.linux": "bash"
+}
+EOF

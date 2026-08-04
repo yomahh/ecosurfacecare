@@ -1,5 +1,5 @@
 import {
-  BrushCleaning, Droplets, Palette, Sparkles, Building2, Bath, CookingPot, PanelsTopLeft
+  Brush, Droplets, Palette, Sparkles, Building2, Bath, CookingPot, PanelsTopLeft
 } from "lucide-react";
 
 export const services = [
@@ -7,7 +7,7 @@ export const services = [
     slug: "grout-cleaning",
     title: "Grout Cleaning",
     short: "Deep cleaning that lifts embedded dirt and restores a cleaner, brighter finish.",
-    icon: BrushCleaning,
+    icon: Brush,
     features: ["Detailed inspection", "Professional deep clean", "Targeted stain treatment", "Care guidance"]
   },
   {

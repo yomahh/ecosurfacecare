@@ -18,7 +18,7 @@ import Cookies from "./pages/Cookies";
 import Terms from "./pages/Terms";
 import Accessibility from "./pages/Accessibility";
 import NotFound from "./pages/NotFound";
-
+import UIKit from "./pages/UIKit";
 export default function App() {
   return (
     <>
@@ -43,6 +43,7 @@ export default function App() {
         </Route>
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/ui-kit" element={<UIKit />} />
       </Routes>
     </>
   );

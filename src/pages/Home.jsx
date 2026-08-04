@@ -1,38 +1,17 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BadgeCheck, Leaf, ShieldCheck, Sparkles } from "lucide-react";
-import SectionHeading from "../components/ui/SectionHeading";
+import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
+import HomeHero from "../components/sections/HomeHero";
 import ServicesGrid from "../components/sections/ServicesGrid";
+import SectionHeading from "../components/ui/SectionHeading";
 import { galleryItems } from "../data/gallery";
 import { reviews } from "../data/reviews";
+import TrustBar from "../components/sections/TrustBar";
 
 export default function Home() {
   return (
     <>
-      <section className="surface-grid overflow-hidden bg-[#f5faf7]">
-        <div className="container-site grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#0b6f63]">Cleaning, restoration & maintenance</p>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight text-[#153f36] sm:text-5xl lg:text-6xl">
-              Bring tired hard surfaces back to life.
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Specialist grout recolouring, deep surface cleaning and eco-conscious steam care for homes and commercial spaces.
-            </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Link to="/request-a-quote" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0b6f63] px-6 py-3.5 font-bold text-white hover:bg-[#085c52]">Request a free quote <ArrowRight size={18} /></Link>
-              <Link to="/our-work" className="inline-flex items-center justify-center rounded-full border border-[#0b6f63] px-6 py-3.5 font-bold text-[#0b6f63] hover:bg-emerald-50">View our results</Link>
-            </div>
-            <div className="mt-8 grid gap-3 sm:grid-cols-3">
-              {["Authorised brand partner", "Residential & commercial", "Eco-conscious approach"].map(x => <div key={x} className="flex items-center gap-2 text-sm font-semibold text-slate-700"><BadgeCheck size={18} className="text-[#0b6f63]" />{x}</div>)}
-            </div>
-          </div>
-          <div className="relative">
-            <div className="rounded-[2rem] bg-white p-5 shadow-xl">
-              <img src="/images/branding/ecosurfacecare-business-card.jpeg" alt="EcoSurfaceCare brand presentation" className="aspect-[4/3] w-full rounded-[1.5rem] object-cover" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeHero />
+      <TrustBar />
 
       <section className="section-space">
         <div className="container-site">

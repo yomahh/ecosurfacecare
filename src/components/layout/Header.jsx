@@ -79,7 +79,7 @@ export default function Header() {
               alt="EcoSurfaceCare"
               className={[
                 "w-auto object-contain transition-all duration-300",
-                scrolled ? "h-14 max-w-[220px]" : "h-16 max-w-[245px]",
+                scrolled ? "h-16 max-w-[260px]" : "h-20 max-w-[300px]",
               ].join(" ")}
             />
           </Link>

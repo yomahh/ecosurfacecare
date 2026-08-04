@@ -6,6 +6,7 @@ import SectionHeading from "../components/ui/SectionHeading";
 import { galleryItems } from "../data/gallery";
 import { reviews } from "../data/reviews";
 import TrustBar from "../components/sections/TrustBar";
+import WorkPreview from "../components/sections/WorkPreview";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <HomeHero />
       <TrustBar />
       <ServicesPreview />
+      <WorkPreview />
 
       <section className="section-space bg-[#f5faf7]">
         <div className="container-site grid gap-10 lg:grid-cols-2">
@@ -31,15 +33,6 @@ export default function Home() {
             <h2 className="mt-4 text-3xl font-bold">GroutGleam and BioSteam expertise</h2>
             <p className="mt-5 leading-8 text-emerald-50">EcoSurfaceCare is proud to represent specialist cleaning and restoration methods from trusted partner brands across the UK.</p>
             <Link to="/about" className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-bold text-[#0b6f63]">About the company <ArrowRight size={18} /></Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-space">
-        <div className="container-site">
-          <SectionHeading eyebrow="Recent work" title="A gallery built around real results" text="The live website will allow the owner to upload, edit, organise and remove project photos and videos from a private admin area." />
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {galleryItems.map(item => <article key={item.id} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"><img src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover"/><div className="p-6"><p className="text-sm font-bold text-[#0b6f63]">{item.category}</p><h3 className="mt-2 text-xl font-bold">{item.title}</h3><p className="mt-2 text-slate-500">{item.location}</p></div></article>)}
           </div>
         </div>
       </section>

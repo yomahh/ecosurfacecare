@@ -1,5 +1,29 @@
 export const galleryItems = [
-  { id: 1, title: "Bathroom grout refresh", category: "Grout Recolouring", location: "Lancashire", image: "/images/branding/ecosurfacecare-business-card.jpeg" },
-  { id: 2, title: "Kitchen tile deep clean", category: "Surface Cleaning", location: "North West", image: "/images/branding/ecosurfacecare-logo.png" },
-  { id: 3, title: "Commercial floor maintenance", category: "Commercial", location: "UK", image: "/images/branding/ecosurfacecare-business-card.jpeg" }
+  {
+    id: "bathroom-grout-refresh",
+    title: "Bathroom Grout Refresh",
+    category: "Grout Recolouring",
+    location: "Lancashire",
+    image: "/images/branding/ecosurfacecare-business-card.jpeg",
+    description:
+      "A complete grout refresh designed to improve colour consistency and brighten the overall bathroom.",
+  },
+  {
+    id: "kitchen-tile-deep-clean",
+    title: "Kitchen Tile Deep Clean",
+    category: "Surface Cleaning",
+    location: "North West",
+    image: "/images/branding/ecosurfacecare-logo.png",
+    description:
+      "Detailed cleaning for tiled kitchen surfaces and heavily used grout lines.",
+  },
+  {
+    id: "commercial-floor-maintenance",
+    title: "Commercial Floor Maintenance",
+    category: "Commercial",
+    location: "United Kingdom",
+    image: "/images/branding/ecosurfacecare-business-card.jpeg",
+    description:
+      "Planned cleaning and maintenance for a busy commercial tiled floor.",
+  },
 ];

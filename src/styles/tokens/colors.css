@@ -1,0 +1,44 @@
+:root {
+
+  /* ========= PRIMARY ========= */
+
+  --color-primary-50: #eefaf7;
+  --color-primary-100:#d6f4ed;
+  --color-primary-200:#b1e7d9;
+  --color-primary-300:#7ed4bc;
+  --color-primary-400:#49b79d;
+  --color-primary-500:#1f9882;
+  --color-primary-600:#0b6f63;
+  --color-primary-700:#08584e;
+  --color-primary-800:#06443c;
+  --color-primary-900:#032a25;
+
+  /* ========= ACCENT ========= */
+
+  --color-accent:#53B86F;
+
+  /* ========= BACKGROUND ========= */
+
+  --color-background:#ffffff;
+
+  --color-surface:#F7FAF8;
+
+  --color-surface-dark:#EEF5F2;
+
+  /* ========= TEXT ========= */
+
+  --color-heading:#17352f;
+
+  --color-body:#566472;
+
+  --color-light:#ffffff;
+
+  /* ========= STATUS ========= */
+
+  --color-success:#22C55E;
+
+  --color-warning:#F59E0B;
+
+  --color-error:#DC2626;
+
+}

@@ -1,0 +1,15 @@
+:root{
+
+--transition-fast:
+
+180ms ease;
+
+--transition-normal:
+
+280ms ease;
+
+--transition-slow:
+
+500ms ease;
+
+}

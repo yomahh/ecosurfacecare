@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
 import HomeHero from "../components/sections/HomeHero";
-import ServicesGrid from "../components/sections/ServicesGrid";
+import ServicesPreview from "../components/sections/ServicesPreview";
 import SectionHeading from "../components/ui/SectionHeading";
 import { galleryItems } from "../data/gallery";
 import { reviews } from "../data/reviews";
@@ -12,14 +12,7 @@ export default function Home() {
     <>
       <HomeHero />
       <TrustBar />
-
-      <section className="section-space">
-        <div className="container-site">
-          <SectionHeading eyebrow="Our services" title="Specialist care for grout, tiles and hard surfaces" text="A focused range of services designed to clean, restore and help maintain the surfaces people notice every day." />
-          <div className="mt-12"><ServicesGrid limit={6} /></div>
-          <div className="mt-10 text-center"><Link to="/services" className="font-bold text-[#0b6f63]">View all services →</Link></div>
-        </div>
-      </section>
+      <ServicesPreview />
 
       <section className="section-space bg-[#f5faf7]">
         <div className="container-site grid gap-10 lg:grid-cols-2">

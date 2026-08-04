@@ -2,14 +2,18 @@ import { useState } from "react";
 import PageHero from "../components/ui/PageHero";
 import { galleryItems } from "../data/gallery";
 
-export default function Gallery() {
+export default function OurWork() {
   const categories = ["All", ...new Set(galleryItems.map(x => x.category))];
   const [active, setActive] = useState("All");
   const items = active === "All" ? galleryItems : galleryItems.filter(x => x.category === active);
 
   return (
     <>
-      <PageHero eyebrow="Gallery" title="Before-and-after results and completed projects" text="This public gallery is prepared for photos, videos, categories and project descriptions managed through the private owner dashboard." />
+      <PageHero
+  eyebrow="Our Work"
+  title="Real surface transformations and completed projects"
+  text="Explore cleaning, grout recolouring and restoration work completed for residential and commercial spaces."
+/>
       <section className="section-space">
         <div className="container-site">
           <div className="flex flex-wrap gap-3">

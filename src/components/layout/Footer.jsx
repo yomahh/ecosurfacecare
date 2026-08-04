@@ -13,7 +13,7 @@ export default function Footer() {
         <div>
           <h3 className="font-bold">Explore</h3>
           <div className="mt-4 flex flex-col gap-3 text-slate-300">
-            <Link to="/services">Services</Link><Link to="/gallery">Gallery</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link>
+            <Link to="/services">Services</Link><Link to="/our-work">Gallery</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link>
           </div>
         </div>
         <div>
@@ -24,11 +24,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="container-site flex flex-col gap-2 py-5 text-sm text-slate-400 md:flex-row md:justify-between">
-          <span>© {new Date().getFullYear()} EcoSurfaceCare. All rights reserved.</span>
-          <Link to="/admin" className="hover:text-white">Owner login</Link>
-        </div>
-      </div>
+  <div className="container-site py-5 text-sm text-slate-400">
+    © {new Date().getFullYear()} EcoSurfaceCare. All rights reserved.
+  </div>
+</div>
     </footer>
   );
 }

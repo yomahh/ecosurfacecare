@@ -1,40 +1,178 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import Button from "../ui/Button";
 
-const links = [
-  ["/", "Home"], ["/services", "Services"], ["/gallery", "Gallery"],
-  ["/about", "About"], ["/sustainability", "Sustainability"],
-  ["/reviews", "Reviews"], ["/contact", "Contact"]
+const navigation = [
+  { to: "/", label: "Home", end: true },
+  { to: "/services", label: "Services" },
+  { to: "/our-work", label: "Our Work" },
+  { to: "/reviews", label: "Reviews" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
-  const navClass = ({ isActive }) =>
-    `text-sm font-semibold transition ${isActive ? "text-[#0b6f63]" : "text-slate-700 hover:text-[#0b6f63]"}`;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 16);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  const navLinkClass = ({ isActive }) =>
+    [
+      "relative py-2 text-sm font-semibold transition-colors duration-200",
+      "after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5",
+      "after:origin-left after:rounded-full after:bg-[#0b6f63]",
+      "after:transition-transform after:duration-200",
+      isActive
+        ? "text-[#0b6f63] after:scale-x-100"
+        : "text-slate-700 after:scale-x-0 hover:text-[#0b6f63] hover:after:scale-x-100",
+    ].join(" ");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="container-site flex h-20 items-center justify-between">
-        <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-          <img src="/images/branding/ecosurfacecare-logo.png" alt="EcoSurfaceCare" className="h-14 w-auto max-w-[210px] object-contain" />
-        </Link>
-        <nav className="hidden items-center gap-6 lg:flex">
-          {links.map(([to, label]) => <NavLink key={to} to={to} className={navClass}>{label}</NavLink>)}
-          <Link to="/request-a-quote" className="rounded-full bg-[#0b6f63] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#085c52]">Request a quote</Link>
-        </nav>
-        <button className="rounded-lg p-2 text-slate-700 lg:hidden" onClick={() => setOpen(!open)} aria-label="Toggle navigation">
-          {open ? <X /> : <Menu />}
-        </button>
-      </div>
-      {open && (
-        <nav className="border-t border-slate-200 bg-white px-4 py-5 lg:hidden">
-          <div className="container-site flex flex-col gap-4">
-            {links.map(([to, label]) => <NavLink key={to} to={to} className={navClass} onClick={() => setOpen(false)}>{label}</NavLink>)}
-            <Link to="/request-a-quote" onClick={() => setOpen(false)} className="mt-2 rounded-full bg-[#0b6f63] px-5 py-3 text-center font-bold text-white">Request a quote</Link>
+    <>
+      <header
+        className={[
+          "sticky top-0 z-50 border-b transition-all duration-300",
+          scrolled
+            ? "border-slate-200 bg-white/95 shadow-sm backdrop-blur-xl"
+            : "border-transparent bg-white/90 backdrop-blur-lg",
+        ].join(" ")}
+      >
+        <div
+          className={[
+            "container-site flex items-center justify-between transition-all duration-300",
+            scrolled ? "h-[72px]" : "h-[88px]",
+          ].join(" ")}
+        >
+          <Link
+            to="/"
+            className="relative z-50 flex shrink-0 items-center"
+            aria-label="EcoSurfaceCare homepage"
+          >
+            <img
+              src="/images/branding/ecosurfacecare-logo.png"
+              alt="EcoSurfaceCare"
+              className={[
+                "w-auto object-contain transition-all duration-300",
+                scrolled ? "h-14 max-w-[220px]" : "h-16 max-w-[245px]",
+              ].join(" ")}
+            />
+          </Link>
+
+          <nav
+            className="hidden items-center gap-7 lg:flex"
+            aria-label="Main navigation"
+          >
+            {navigation.map(({ to, label, end }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                className={navLinkClass}
+              >
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="hidden lg:block">
+            <Button to="/request-a-quote" size="small">
+              Request a Free Quote
+            </Button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((current) => !current)}
+            className="relative z-50 grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white text-[#17352f] shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:hidden"
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </header>
+
+      <div
+        className={[
+          "fixed inset-0 z-40 bg-[#102f2a]/30 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
+          menuOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0",
+        ].join(" ")}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      <aside
+        id="mobile-navigation"
+        className={[
+          "fixed right-0 top-0 z-40 flex h-dvh w-full max-w-sm flex-col bg-white px-6 pb-8 pt-28 shadow-2xl transition-transform duration-300 ease-out lg:hidden",
+          menuOpen ? "translate-x-0" : "translate-x-full",
+        ].join(" ")}
+        aria-hidden={!menuOpen}
+      >
+        <nav className="flex flex-col" aria-label="Mobile navigation">
+          {navigation.map(({ to, label, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                [
+                  "border-b border-slate-100 py-5 text-xl font-bold transition-colors",
+                  isActive
+                    ? "text-[#0b6f63]"
+                    : "text-[#17352f] hover:text-[#0b6f63]",
+                ].join(" ")
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
         </nav>
-      )}
-    </header>
+
+        <div className="mt-auto pt-8">
+          <Button
+            to="/request-a-quote"
+            size="large"
+            className="w-full"
+          >
+            Request a Free Quote
+          </Button>
+
+          <p className="mt-5 text-center text-sm leading-6 text-slate-500">
+            Professional cleaning, restoration and maintenance for hard
+            surfaces.
+          </p>
+        </div>
+      </aside>
+    </>
   );
 }

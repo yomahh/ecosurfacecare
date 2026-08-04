@@ -20,7 +20,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link to="/request-a-quote" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0b6f63] px-6 py-3.5 font-bold text-white hover:bg-[#085c52]">Request a free quote <ArrowRight size={18} /></Link>
-              <Link to="/gallery" className="inline-flex items-center justify-center rounded-full border border-[#0b6f63] px-6 py-3.5 font-bold text-[#0b6f63] hover:bg-emerald-50">View our results</Link>
+              <Link to="/our-work" className="inline-flex items-center justify-center rounded-full border border-[#0b6f63] px-6 py-3.5 font-bold text-[#0b6f63] hover:bg-emerald-50">View our results</Link>
             </div>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {["Authorised brand partner", "Residential & commercial", "Eco-conscious approach"].map(x => <div key={x} className="flex items-center gap-2 text-sm font-semibold text-slate-700"><BadgeCheck size={18} className="text-[#0b6f63]" />{x}</div>)}

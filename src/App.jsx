@@ -19,13 +19,13 @@ import Terms from "./pages/Terms";
 import Accessibility from "./pages/Accessibility";
 import NotFound from "./pages/NotFound";
 import UIKit from "./pages/UIKit";
-import AnimatedLogoIntro from "./components/ui/AnimatedLogoIntro";
+
 
 export default function App() {
   return (
     <>
       <ScrollToTop />
-      <AnimatedLogoIntro />
+
 
       <Routes>
         <Route element={<SiteLayout />}>

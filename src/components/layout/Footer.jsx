@@ -25,8 +25,9 @@ const legal = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#102f2a] text-white">
-      <div className="container-site grid gap-12 py-14 lg:grid-cols-[1.4fr_.7fr_.7fr_1fr] lg:py-18">
+    <footer className="bg-forest-deep text-white">
+      <div className="container-site grid gap-12 py-14 lg:grid-cols-[1.4fr_.7fr_.7fr_1fr]">
+        {/* BRAND */}
         <div>
           <Link
             to="/"
@@ -47,12 +48,14 @@ export default function Footer() {
 
           <div className="mt-6 flex gap-3">
             <a
-              href="#"
-              aria-label="EcoSurfaceCare on Facebook"
-              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
-            >
-              <Facebook size={18} />
-            </a>
+  href="https://www.facebook.com/groutgleam.bb"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="EcoSurfaceCare on Facebook"
+  className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+>
+  <Facebook size={18} />
+</a>
 
             <a
               href="#"
@@ -64,6 +67,7 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* NAVIGATION */}
         <div>
           <h2 className="font-bold text-white">Explore</h2>
 
@@ -80,6 +84,7 @@ export default function Footer() {
           </nav>
         </div>
 
+        {/* LEGAL */}
         <div>
           <h2 className="font-bold text-white">Information</h2>
 
@@ -96,32 +101,42 @@ export default function Footer() {
           </nav>
         </div>
 
+        {/* CONTACT */}
         <div>
           <h2 className="font-bold text-white">Contact</h2>
 
           <div className="mt-5 space-y-4 text-sm text-slate-300">
             <a
-              href="tel:"
+              href="tel:+447873945808"
               className="flex items-start gap-3 transition hover:text-white"
             >
-              <Phone size={18} className="mt-0.5 shrink-0 text-emerald-300" />
+              <Phone
+                size={18}
+                className="mt-0.5 shrink-0 text-emerald-300"
+              />
 
-              <span>Add final phone number</span>
+              <span>07873 945808</span>
             </a>
 
             <a
-              href="mailto:"
+              href="mailto:contact@ecosurfacecare.co.uk"
               className="flex items-start gap-3 transition hover:text-white"
             >
-              <Mail size={18} className="mt-0.5 shrink-0 text-emerald-300" />
+              <Mail
+                size={18}
+                className="mt-0.5 shrink-0 text-emerald-300"
+              />
 
-              <span>Add final business email</span>
+              <span>contact@ecosurfacecare.co.uk</span>
             </a>
 
             <div className="flex items-start gap-3">
-              <MapPin size={18} className="mt-0.5 shrink-0 text-emerald-300" />
+              <MapPin
+                size={18}
+                className="mt-0.5 shrink-0 text-emerald-300"
+              />
 
-              <span>Add confirmed service area</span>
+              <span>Serving all BB postcode areas</span>
             </div>
           </div>
 
@@ -135,6 +150,7 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* COPYRIGHT */}
       <div className="border-t border-white/10">
         <div className="container-site flex flex-col gap-3 py-5 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>

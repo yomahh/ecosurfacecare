@@ -14,7 +14,7 @@ export default function OurWork() {
   title="Real surface transformations and completed projects"
   text="Explore cleaning, grout recolouring and restoration work completed for residential and commercial spaces."
 />
-      <section className="section-space">
+      <section className="pt-10 pb-6 lg:pt-12 lg:pb-10">
         <div className="container-site">
           <div className="flex flex-wrap gap-3">
             {categories.map(category => <button key={category} onClick={() => setActive(category)} className={`rounded-full px-5 py-2.5 font-semibold ${active === category ? "bg-[#228B22] text-white" : "bg-slate-100 text-slate-700"}`}>{category}</button>)}

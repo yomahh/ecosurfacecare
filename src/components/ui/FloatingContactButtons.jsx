@@ -104,7 +104,7 @@ export default function FloatingContactButtons() {
           "grid h-14 w-14 place-items-center rounded-full text-white shadow-2xl",
           "transition duration-300 hover:scale-105 focus-visible:outline-none",
           "focus-visible:ring-4 focus-visible:ring-emerald-200",
-          open ? "rotate-90 bg-[#17352f]" : "bg-[#0b6f63]",
+          open ? "rotate-90 bg-[#17352f]" : "bg-[#228B22]",
         ].join(" ")}
         aria-label={open ? "Close contact options" : "Open contact options"}
         aria-expanded={open}

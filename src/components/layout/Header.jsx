@@ -46,11 +46,11 @@ export default function Header() {
     [
       "relative py-2 text-sm font-semibold transition-colors duration-200",
       "after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5",
-      "after:origin-left after:rounded-full after:bg-[#0b6f63]",
+      "after:origin-left after:rounded-full after:bg-[#228B22]",
       "after:transition-transform after:duration-200",
       isActive
-        ? "text-[#0b6f63] after:scale-x-100"
-        : "text-slate-700 after:scale-x-0 hover:text-[#0b6f63] hover:after:scale-x-100",
+        ? "text-[#228B22] after:scale-x-100"
+        : "text-slate-700 after:scale-x-0 hover:text-[#228B22] hover:after:scale-x-100",
     ].join(" ");
 
   return (
@@ -148,8 +148,8 @@ export default function Header() {
                 [
                   "border-b border-slate-100 py-5 text-xl font-bold transition-colors",
                   isActive
-                    ? "text-[#0b6f63]"
-                    : "text-[#17352f] hover:text-[#0b6f63]",
+                    ? "text-[#228B22]"
+                    : "text-[#17352f] hover:text-[#228B22]",
                 ].join(" ")
               }
             >

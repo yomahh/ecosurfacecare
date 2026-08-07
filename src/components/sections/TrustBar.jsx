@@ -45,7 +45,7 @@ export default function TrustBar() {
               index >= 2 ? "sm:border-t sm:border-slate-200 lg:border-t-0" : "",
             ].join(" ")}
           >
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-[#0b6f63]">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-[#228B22]">
               <Icon size={22} />
             </span>
 

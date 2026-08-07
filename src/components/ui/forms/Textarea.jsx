@@ -23,7 +23,7 @@ export default function Textarea({
         className={[
           "min-h-36 w-full resize-y rounded-2xl border bg-white px-4 py-3",
           "text-slate-900 outline-none transition placeholder:text-slate-400",
-          "focus:border-[#0b6f63] focus:ring-4 focus:ring-emerald-100",
+          "focus:border-[#228B22] focus:ring-4 focus:ring-emerald-100",
           error ? "border-red-500" : "border-slate-300",
         ].join(" ")}
         {...props}

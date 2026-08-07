@@ -23,7 +23,7 @@ export default function ServiceCard({
         className={[
           "relative flex min-h-52 items-end overflow-hidden p-7",
           featured
-            ? "bg-[#0b6f63]"
+            ? "bg-[#228B22]"
             : "bg-gradient-to-br from-[#eefaf7] via-white to-[#dff4ee]",
         ].join(" ")}
       >
@@ -49,7 +49,7 @@ export default function ServiceCard({
             "transition duration-300 group-hover:scale-105 group-hover:-rotate-2",
             featured
               ? "border-white/20 bg-white/15 text-white backdrop-blur"
-              : "border-emerald-200 bg-white text-[#0b6f63] shadow-md",
+              : "border-emerald-200 bg-white text-[#228B22] shadow-md",
           ].join(" ")}
         >
           {Icon && <Icon size={36} strokeWidth={1.7} />}
@@ -76,7 +76,7 @@ export default function ServiceCard({
                 key={feature}
                 className="flex items-start gap-3 text-sm font-medium text-slate-600"
               >
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#0b6f63]">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#228B22]">
                   <Check size={13} strokeWidth={3} />
                 </span>
 
@@ -90,7 +90,7 @@ export default function ServiceCard({
           to={`/services/${slug}`}
           className={[
             "mt-7 inline-flex items-center gap-2 border-t border-slate-100 pt-5",
-            "font-bold text-[#0b6f63] transition-colors hover:text-[#08584e]",
+            "font-bold text-[#228B22] transition-colors hover:text-[#08584e]",
           ].join(" ")}
         >
           Explore this service

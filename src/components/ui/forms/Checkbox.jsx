@@ -13,7 +13,7 @@ export default function Checkbox({
       <input
         id={id}
         type="checkbox"
-        className="mt-1 h-5 w-5 rounded border-slate-300 accent-[#0b6f63]"
+        className="mt-1 h-5 w-5 rounded border-slate-300 accent-[#228B22]"
         {...props}
       />
 

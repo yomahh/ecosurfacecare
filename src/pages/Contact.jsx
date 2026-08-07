@@ -21,7 +21,7 @@ export default function Contact() {
               <input className="rounded-xl border border-slate-300 px-4 py-3" type="email" placeholder="Email address" />
               <input className="rounded-xl border border-slate-300 px-4 py-3" placeholder="Phone number" />
               <textarea className="min-h-36 rounded-xl border border-slate-300 px-4 py-3" placeholder="How can we help?" />
-              <button className="rounded-full bg-[#0b6f63] px-6 py-3 font-bold text-white">Send enquiry</button>
+              <button className="rounded-full bg-[#228B22] px-6 py-3 font-bold text-white">Send enquiry</button>
               <p className="text-sm text-slate-500">Demonstration form. Connect this to a Cloudflare Function or Worker before launch.</p>
             </div>
           </form>

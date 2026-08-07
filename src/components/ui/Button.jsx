@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 
 const variants = {
   primary:
-    "bg-[#0b6f63] text-white border-[#0b6f63] hover:bg-[#08584e] hover:border-[#08584e]",
+    "bg-[#228B22] text-white border-[#228B22] hover:bg-[#08584e] hover:border-[#08584e]",
   secondary:
-    "bg-white text-[#0b6f63] border-[#0b6f63] hover:bg-emerald-50",
+    "bg-white text-[#228B22] border-[#228B22] hover:bg-emerald-50",
   ghost:
-    "bg-transparent text-[#0b6f63] border-transparent hover:bg-emerald-50",
+    "bg-transparent text-[#228B22] border-transparent hover:bg-emerald-50",
   dark:
     "bg-[#17352f] text-white border-[#17352f] hover:bg-[#0e2723]",
   danger:

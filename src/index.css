@@ -47,7 +47,7 @@ video {
 
 ::selection {
   color: #ffffff;
-  background: var(--color-primary-600, #0b6f63);
+  background: var(--color-primary-600, #228B22);
 }
 
 .container-site {
@@ -59,15 +59,101 @@ video {
   padding-block: 4.5rem;
 }
 
-.surface-grid {
+/* .surface-grid {
   background-image:
     linear-gradient(rgba(11, 111, 99, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(11, 111, 99, 0.06) 1px, transparent 1px);
   background-size: 28px 28px;
-}
+} */
 
 @media (min-width: 768px) {
   .section-space {
     padding-block: 6rem;
   }
+}
+
+
+.hero-surface {
+  position: relative;
+  background:
+    radial-gradient(
+      circle at 15% 30%,
+      rgba(34, 139, 34, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 88% 70%,
+      rgba(38, 198, 180, 0.16),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 55% 110%,
+      rgba(20, 90, 45, 0.12),
+      transparent 38%
+    ),
+    linear-gradient(
+      135deg,
+      #f7fbf3 0%,
+      #eef7ea 45%,
+      #f1f8f6 100%
+    );
+}
+
+.hero-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 255, 255, 0.7),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 255, 255, 0.4),
+      transparent 30%
+    );
+
+  mix-blend-mode: soft-light;
+}
+
+/* EcoSurfaceCare brand utilities */
+
+.text-brand {
+  color: var(--color-primary-600);
+}
+
+.text-heading {
+  color: var(--color-heading);
+}
+
+.text-body {
+  color: var(--color-body);
+}
+
+.bg-brand {
+  background-color: var(--color-primary-600);
+}
+
+.bg-forest {
+  background-color: var(--color-forest);
+}
+
+.bg-forest-deep {
+  background-color: var(--color-forest-deep);
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.border-brand {
+  border-color: var(--color-primary-600);
+}
+
+.text-aqua {
+  color: var(--color-aqua);
 }

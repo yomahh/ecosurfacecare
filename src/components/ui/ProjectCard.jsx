@@ -29,12 +29,12 @@ export default function ProjectCard({
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#102f2a]/70 via-transparent to-transparent" />
 
-          <span className="absolute left-5 top-5 rounded-full border border-white/20 bg-white/90 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[#0b6f63] backdrop-blur">
+          <span className="absolute left-5 top-5 rounded-full border border-white/20 bg-white/90 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[#228B22] backdrop-blur">
             {category}
           </span>
 
           {featured && (
-            <span className="absolute right-5 top-5 rounded-full border border-white/20 bg-[#0b6f63]/90 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-white backdrop-blur">
+            <span className="absolute right-5 top-5 rounded-full border border-white/20 bg-[#228B22]/90 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-white backdrop-blur">
               Featured project
             </span>
           )}
@@ -56,7 +56,7 @@ export default function ProjectCard({
             </p>
           </div>
 
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#0b6f63] transition group-hover:bg-[#0b6f63] group-hover:text-white">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#228B22] transition group-hover:bg-[#228B22] group-hover:text-white">
             <ArrowUpRight
               size={19}
               className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

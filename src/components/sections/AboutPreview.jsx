@@ -65,7 +65,7 @@ export default function AboutPreview() {
             to="/about"
             variant="secondary"
             icon={<ArrowRight size={18} />}
-            className="relative mt-8 border-white bg-white text-[#0b6f63] hover:bg-emerald-50"
+            className="relative mt-8 border-white bg-white text-[#228B22] hover:bg-emerald-50"
           >
             Discover our story
           </Button>
@@ -77,7 +77,7 @@ export default function AboutPreview() {
               key={title}
               className="group flex gap-5 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
             >
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-emerald-200 transition group-hover:bg-white group-hover:text-[#0b6f63]">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-emerald-200 transition group-hover:bg-white group-hover:text-[#228B22]">
                 <Icon size={23} />
               </span>
 

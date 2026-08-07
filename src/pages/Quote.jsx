@@ -16,7 +16,7 @@ export default function Quote() {
             <textarea className="min-h-40 rounded-xl border border-slate-300 px-4 py-3 md:col-span-2" placeholder="Describe the surfaces, room and current condition" />
             <label className="rounded-xl border border-dashed border-slate-300 p-5 text-slate-600 md:col-span-2">Photo uploads will be connected here during the backend phase.<input type="file" className="mt-3 block" multiple /></label>
             <label className="flex gap-3 text-sm text-slate-600 md:col-span-2"><input type="checkbox" /> I agree that EcoSurfaceCare may use these details to respond to my enquiry.</label>
-            <button className="rounded-full bg-[#0b6f63] px-6 py-3 font-bold text-white md:col-span-2">Request my quote</button>
+            <button className="rounded-full bg-[#228B22] px-6 py-3 font-bold text-white md:col-span-2">Request my quote</button>
           </div>
         </form>
       </section>

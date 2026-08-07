@@ -1,44 +1,66 @@
 :root {
+  /* ========================================
+     ECOSURFACECARE BRAND COLOUR SYSTEM
+     ======================================== */
 
-  /* ========= PRIMARY ========= */
 
-  --color-primary-50: #eefaf7;
-  --color-primary-100:#d6f4ed;
-  --color-primary-200:#b1e7d9;
-  --color-primary-300:#7ed4bc;
-  --color-primary-400:#49b79d;
-  --color-primary-500:#1f9882;
-  --color-primary-600:#0b6f63;
-  --color-primary-700:#08584e;
-  --color-primary-800:#06443c;
-  --color-primary-900:#032a25;
+  /* ========= PRIMARY — FOREST GREEN ========= */
 
-  /* ========= ACCENT ========= */
+  --color-primary-50: #f0f8ee;
+  --color-primary-100: #e1f1dd;
+  --color-primary-200: #c4e3bb;
+  --color-primary-300: #9dce8f;
+  --color-primary-400: #6db45e;
+  --color-primary-500: #41963a;
+  --color-primary-600: #228b22;
+  --color-primary-700: #1d701e;
+  --color-primary-800: #19591b;
+  --color-primary-900: #154918;
 
-  --color-accent:#53B86F;
 
-  /* ========= BACKGROUND ========= */
+  /* ========= DARK FOREST ========= */
 
-  --color-background:#ffffff;
+  --color-forest: #173b1a;
+  --color-forest-deep: #102f14;
 
-  --color-surface:#F7FAF8;
 
-  --color-surface-dark:#EEF5F2;
+  /* ========= WATER / STEAM ACCENT ========= */
+
+  --color-aqua: #27aeb5;
+  --color-aqua-light: #dff5f4;
+
+  /* Keep existing accent token compatible */
+  --color-accent: #53b86f;
+
+
+  /* ========= BACKGROUNDS & SURFACES ========= */
+
+  --color-background: #ffffff;
+
+  --color-surface: #f5faf3;
+  --color-surface-soft: #eef7ea;
+  --color-surface-dark: #e4efe1;
+
+  --color-white: #ffffff;
+
 
   /* ========= TEXT ========= */
 
-  --color-heading:#17352f;
+  --color-heading: #173b1a;
+  --color-body: #566472;
+  --color-muted: #718096;
+  --color-light: #ffffff;
 
-  --color-body:#566472;
 
-  --color-light:#ffffff;
+  /* ========= BORDERS ========= */
+
+  --color-border: #dce7dc;
+
 
   /* ========= STATUS ========= */
 
-  --color-success:#22C55E;
-
-  --color-warning:#F59E0B;
-
-  --color-error:#DC2626;
-
+  --color-success: #228b22;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  --color-danger: #dc2626;
 }

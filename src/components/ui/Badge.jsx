@@ -3,7 +3,7 @@ const variants = {
   neutral: "bg-slate-100 text-slate-700 border-slate-200",
   success: "bg-green-50 text-green-700 border-green-200",
   warning: "bg-amber-50 text-amber-700 border-amber-200",
-  dark: "bg-[#17352f] text-white border-[#17352f]",
+  dark: "bg-forest text-white border-[var(--color-forest)]",
 };
 
 export default function Badge({

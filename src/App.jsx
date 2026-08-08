@@ -6,8 +6,6 @@ import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
 import OurWork from "./pages/OurWork";
 import About from "./pages/About";
-import Sustainability from "./pages/Sustainability";
-import Reviews from "./pages/Reviews";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import Quote from "./pages/Quote";
@@ -41,8 +39,6 @@ export default function App() {
           />
 
           <Route path="about" element={<About />} />
-          <Route path="sustainability" element={<Sustainability />} />
-          <Route path="reviews" element={<Reviews />} />
           <Route path="faq" element={<FAQ />} />
           <Route path="contact" element={<Contact />} />
           <Route path="request-a-quote" element={<Quote />} />

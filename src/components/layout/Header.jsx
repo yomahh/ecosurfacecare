@@ -7,7 +7,6 @@ const navigation = [
   { to: "/", label: "Home", end: true },
   { to: "/services", label: "Services" },
   { to: "/our-work", label: "Our Work" },
-  //{ to: "/reviews", label: "Reviews" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -109,7 +108,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setMenuOpen((current) => !current)}
-            className="relative z-50 grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white text-[#17352f] shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:hidden"
+            className="relative z-50 grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white text-heading shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:hidden"
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
@@ -121,7 +120,7 @@ export default function Header() {
 
       <div
         className={[
-          "fixed inset-0 z-40 bg-[#102f2a]/30 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
+          "fixed inset-0 z-40 bg-[rgba(16,47,20,0.30)] backdrop-blur-sm transition-opacity duration-300 lg:hidden",
           menuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
@@ -149,7 +148,7 @@ export default function Header() {
                   "border-b border-slate-100 py-5 text-xl font-bold transition-colors",
                   isActive
                     ? "text-[#228B22]"
-                    : "text-[#17352f] hover:text-[#228B22]",
+                    : "text-heading hover:text-brand",
                 ].join(" ")
               }
             >

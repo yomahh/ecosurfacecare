@@ -8,7 +8,7 @@ const variants = {
   ghost:
     "bg-transparent text-[#228B22] border-transparent hover:bg-emerald-50",
   dark:
-    "bg-[#17352f] text-white border-[#17352f] hover:bg-[#0e2723]",
+    "bg-forest text-white border-[var(--color-forest)] hover:bg-forest-deep",
   danger:
     "bg-red-600 text-white border-red-600 hover:bg-red-700 hover:border-red-700",
 };

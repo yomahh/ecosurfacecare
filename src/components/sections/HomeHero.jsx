@@ -81,6 +81,7 @@ export default function HomeHero() {
                 loop
                 playsInline
                 preload="metadata"
+                poster="/images/branding/animated-logo-poster.jpg"
                 className="aspect-[4/3] w-full object-cover"
                 aria-label="Animated EcoSurfaceCare logo"
               >

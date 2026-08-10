@@ -74,7 +74,7 @@ export default function Header() {
             aria-label="EcoSurfaceCare homepage"
           >
             <img
-              src="/images/branding/ecosurfacecare-logo.png"
+              src="/images/branding/ecosurfacecare-logo-optimized.png"
               alt="EcoSurfaceCare"
               className={[
                 "w-auto object-contain transition-all duration-300",

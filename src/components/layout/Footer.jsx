@@ -35,7 +35,7 @@ export default function Footer() {
             aria-label="EcoSurfaceCare homepage"
           >
             <img
-              src="/images/branding/ecosurfacecare-logo.png"
+              src="/images/branding/ecosurfacecare-logo-optimized.png"
               alt="EcoSurfaceCare"
               className="h-16 w-auto max-w-[250px] object-contain"
             />

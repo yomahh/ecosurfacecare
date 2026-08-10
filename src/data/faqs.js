@@ -4,5 +4,5 @@ export const faqs = [
   ["Do you work in homes and commercial properties?", "Yes. EcoSurfaceCare is being structured to support both residential and commercial clients."],
   ["Can I send photographs for an estimate?", "Yes. The quote form includes space for project details and will later support direct photo uploads."],
   ["Is steam cleaning suitable for every surface?", "Not always. Each surface should be assessed first so the safest and most suitable method can be selected."],
-  ["Which areas do you cover?", "The final service area will be confirmed before launch. The website is prepared for UK-wide and regional coverage information."]
+  ["Which areas do you cover?", "EcoSurfaceCare currently covers all BB postcode areas, including Blackburn, Burnley, Darwen, Accrington, Clitheroe and the Ribble Valley, Nelson, Colne and Barnoldswick."]
 ];

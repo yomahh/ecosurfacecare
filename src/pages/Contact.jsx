@@ -1,4 +1,5 @@
 import {
+  CheckCircle2,
   Clock3,
   Mail,
   MapPin,
@@ -6,8 +7,11 @@ import {
   Phone,
   Send,
 } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import PageHero from "../components/ui/PageHero";
+import TurnstileWidget from "../components/security/TurnstileWidget";
+import { submitContact } from "../services/api";
 
 const contactDetails = {
   phone: "07873 945808",
@@ -25,8 +29,72 @@ const contactDetails = {
 };
 
 export default function Contact() {
-  const handleSubmit = (event) => {
+  const [status, setStatus] = useState("idle");
+  const [message, setMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+
+  const handleTurnstileVerify = useCallback((token) => {
+    setTurnstileToken(token);
+
+    setStatus((current) =>
+      current === "error" ? "idle" : current,
+    );
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken("");
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken("");
+    setStatus("error");
+    setMessage(
+      "The security check could not be completed. Please try again.",
+    );
+  }, []);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!turnstileToken) {
+      setStatus("error");
+      setMessage("Please complete the security check.");
+      return;
+    }
+
+    setStatus("submitting");
+    setMessage("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      name: formData.get("name")?.trim(),
+      email: formData.get("email")?.trim(),
+      phone: formData.get("phone")?.trim(),
+      message: formData.get("message")?.trim(),
+      turnstileToken,
+    };
+
+    try {
+      const result = await submitContact(payload);
+
+      setStatus("success");
+      setMessage(result.message);
+      setTurnstileToken("");
+
+      form.reset();
+    } catch (error) {
+      setStatus("error");
+
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+
+      setTurnstileToken("");
+    }
   };
 
   return (
@@ -39,7 +107,6 @@ export default function Contact() {
 
       <section className="pt-10 pb-6 lg:pt-12 lg:pb-10">
         <div className="container-site grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          {/* CONTACT DETAILS */}
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-brand">
               Get in touch
@@ -65,18 +132,12 @@ export default function Contact() {
                     Phone
                   </p>
 
-                  {contactDetails.phoneHref ? (
-                    <a
-                      href={`tel:${contactDetails.phoneHref}`}
-                      className="mt-1 block font-bold text-heading transition hover:text-brand"
-                    >
-                      {contactDetails.phone}
-                    </a>
-                  ) : (
-                    <p className="mt-1 font-bold text-heading">
-                      {contactDetails.phone}
-                    </p>
-                  )}
+                  <a
+                    href={`tel:${contactDetails.phoneHref}`}
+                    className="mt-1 block font-bold text-heading transition hover:text-brand"
+                  >
+                    {contactDetails.phone}
+                  </a>
                 </div>
               </div>
 
@@ -91,11 +152,11 @@ export default function Contact() {
                   </p>
 
                   <a
-  href={`mailto:${contactDetails.email}`}
-  className="mt-1 block font-bold text-heading transition hover:text-brand"
->
-  {contactDetails.email}
-</a>
+                    href={`mailto:${contactDetails.email}`}
+                    className="mt-1 block font-bold text-heading transition hover:text-brand"
+                  >
+                    {contactDetails.email}
+                  </a>
                 </div>
               </div>
 
@@ -132,20 +193,17 @@ export default function Contact() {
               </div>
             </div>
 
-            {contactDetails.whatsapp && (
-              <a
-                href={contactDetails.whatsapp}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--color-primary-600)] px-5 py-3 font-bold text-brand transition hover:bg-[var(--color-primary-50)]"
-              >
-                <MessageCircle size={19} />
-                Message us on WhatsApp
-              </a>
-            )}
+            <a
+              href={contactDetails.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--color-primary-600)] px-5 py-3 font-bold text-brand transition hover:bg-[var(--color-primary-50)]"
+            >
+              <MessageCircle size={19} />
+              Message us on WhatsApp
+            </a>
           </div>
 
-          {/* GENERAL ENQUIRY FORM */}
           <form
             className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm md:p-9"
             onSubmit={handleSubmit}
@@ -240,17 +298,73 @@ export default function Contact() {
                 />
               </div>
 
+              <div>
+                <p className="mb-3 text-sm font-semibold text-heading">
+                  Security check
+                </p>
+
+                <TurnstileWidget
+                  onVerify={handleTurnstileVerify}
+                  onExpire={handleTurnstileExpire}
+                  onError={handleTurnstileError}
+                />
+              </div>
+
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg"
+                disabled={
+                  status === "submitting" ||
+                  !turnstileToken
+                }
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Send enquiry
-                <Send size={18} />
+                {status === "submitting" ? (
+                  "Sending..."
+                ) : (
+                  <>
+                    Send enquiry
+                    <Send size={18} />
+                  </>
+                )}
               </button>
 
+              {status === "success" && (
+                <div
+                  className="rounded-2xl border border-green-200 bg-green-50 p-5 text-green-800"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2
+                      size={22}
+                      className="mt-0.5 shrink-0"
+                    />
+
+                    <div>
+                      <p className="font-bold">
+                        Message sent
+                      </p>
+
+                      <p className="mt-1 text-sm leading-6">
+                        {message}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {status === "error" && (
+                <div
+                  className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  {message}
+                </div>
+              )}
+
               <p className="text-sm leading-6 text-slate-500">
-                This form will be connected securely before the website goes
-                live.
+                Your details will only be used to respond to your enquiry.
               </p>
             </div>
           </form>

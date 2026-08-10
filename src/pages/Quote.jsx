@@ -1,9 +1,81 @@
-import { Camera, Send } from "lucide-react";
+import { Camera, CheckCircle2, Send } from "lucide-react";
+import { useCallback, useState } from "react";
+
 import PageHero from "../components/ui/PageHero";
+import TurnstileWidget from "../components/security/TurnstileWidget";
+import { submitQuote } from "../services/api";
 
 export default function Quote() {
-  const handleSubmit = (event) => {
+  const [status, setStatus] = useState("idle");
+  const [message, setMessage] = useState("");
+  const [reference, setReference] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+
+  const handleTurnstileVerify = useCallback((token) => {
+    setTurnstileToken(token);
+
+    setStatus((current) =>
+      current === "error" ? "idle" : current,
+    );
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken("");
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken("");
+    setStatus("error");
+    setMessage(
+      "The security check could not be completed. Please try again.",
+    );
+  }, []);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!turnstileToken) {
+      setStatus("error");
+      setMessage("Please complete the security check.");
+      return;
+    }
+
+    setStatus("submitting");
+    setMessage("");
+    setReference("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    formData.append(
+      "turnstileToken",
+      turnstileToken,
+    );
+
+    try {
+      const result = await submitQuote(formData);
+
+      setStatus("success");
+      setMessage(result.message);
+      setReference(result.reference);
+      setTurnstileToken("");
+
+      form.reset();
+    } catch (error) {
+      setStatus("error");
+
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+
+      /*
+       * Turnstile tokens are single-use, so remove the old
+       * token after any submission attempt.
+       */
+      setTurnstileToken("");
+    }
   };
 
   return (
@@ -35,6 +107,7 @@ export default function Quote() {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
+            {/* FULL NAME */}
             <div>
               <label
                 htmlFor="quote-name"
@@ -54,6 +127,7 @@ export default function Quote() {
               />
             </div>
 
+            {/* EMAIL */}
             <div>
               <label
                 htmlFor="quote-email"
@@ -73,6 +147,7 @@ export default function Quote() {
               />
             </div>
 
+            {/* PHONE */}
             <div>
               <label
                 htmlFor="quote-phone"
@@ -92,6 +167,7 @@ export default function Quote() {
               />
             </div>
 
+            {/* POSTCODE */}
             <div>
               <label
                 htmlFor="quote-postcode"
@@ -111,6 +187,7 @@ export default function Quote() {
               />
             </div>
 
+            {/* PROPERTY TYPE */}
             <div>
               <label
                 htmlFor="quote-property"
@@ -122,13 +199,20 @@ export default function Quote() {
               <select
                 id="quote-property"
                 name="propertyType"
+                required
                 className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-[var(--color-primary-600)] focus:ring-4 focus:ring-[var(--color-primary-100)]"
               >
-                <option value="residential">Residential property</option>
-                <option value="commercial">Commercial property</option>
+                <option value="residential">
+                  Residential property
+                </option>
+
+                <option value="commercial">
+                  Commercial property
+                </option>
               </select>
             </div>
 
+            {/* SERVICE */}
             <div>
               <label
                 htmlFor="quote-service"
@@ -147,25 +231,42 @@ export default function Quote() {
                 <option value="" disabled>
                   Select a service
                 </option>
-                <option value="grout-cleaning">Grout cleaning</option>
+
+                <option value="grout-cleaning">
+                  Grout cleaning
+                </option>
+
                 <option value="grout-recolouring">
-                  Grout recolouring & sealing
+                  Grout recolouring &amp; sealing
                 </option>
-                <option value="biosteam">BioSteam deep cleaning</option>
+
+                <option value="biosteam">
+                  BioSteam deep cleaning
+                </option>
+
                 <option value="surface-restoration">
-                  Tile & surface restoration
+                  Tile &amp; surface restoration
                 </option>
+
                 <option value="bathroom">
-                  Bathroom & shower restoration
+                  Bathroom &amp; shower restoration
                 </option>
-                <option value="kitchen">Kitchen surface care</option>
-                <option value="floor">Floor cleaning & maintenance</option>
+
+                <option value="kitchen">
+                  Kitchen surface care
+                </option>
+
+                <option value="floor">
+                  Floor cleaning &amp; maintenance
+                </option>
+
                 <option value="commercial">
                   Commercial surface cleaning
                 </option>
               </select>
             </div>
 
+            {/* DESCRIPTION */}
             <div className="md:col-span-2">
               <label
                 htmlFor="quote-description"
@@ -183,6 +284,7 @@ export default function Quote() {
               />
             </div>
 
+            {/* PHOTOS */}
             <div className="md:col-span-2">
               <label
                 htmlFor="quote-photos"
@@ -204,7 +306,7 @@ export default function Quote() {
                     </p>
 
                     <p className="mt-2 text-xs text-slate-500">
-                      Optional · You can select multiple photos
+                      Optional · Up to 5 photos · Maximum 12 MB per photo
                     </p>
                   </div>
                 </div>
@@ -213,37 +315,113 @@ export default function Quote() {
                   id="quote-photos"
                   name="photos"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                   multiple
                   className="mt-4 block w-full text-sm text-slate-600"
                 />
               </label>
+
+              <p className="mt-2 text-xs leading-5 text-slate-500">
+                JPG, PNG, WebP, HEIC and HEIF images are supported. Photos are
+                used to help us assess your project and respond to your quote
+                request.
+              </p>
             </div>
 
+            {/* SECURITY CHECK */}
+            <div className="md:col-span-2">
+              <p className="mb-3 text-sm font-semibold text-heading">
+                Security check
+              </p>
+
+              <TurnstileWidget
+                onVerify={handleTurnstileVerify}
+                onExpire={handleTurnstileExpire}
+                onError={handleTurnstileError}
+              />
+            </div>
+
+            {/* CONSENT */}
             <label className="flex items-start gap-3 text-sm leading-6 text-slate-600 md:col-span-2">
               <input
                 type="checkbox"
                 name="consent"
                 required
-                className="mt-1 h-4 w-4 accent-[var(--color-primary-600)]"
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-primary-600)]"
               />
 
               <span>
-                I agree that EcoSurfaceCare may use these details to respond to
-                my quote request.
+                I agree that EcoSurfaceCare may use these details and any
+                photographs I provide to respond to my quote request.
               </span>
             </label>
 
+            {/* SUBMIT BUTTON */}
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg md:col-span-2"
+              disabled={
+                status === "submitting" ||
+                !turnstileToken
+              }
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
             >
-              Send my quote request
-              <Send size={18} />
+              {status === "submitting" ? (
+                "Sending..."
+              ) : (
+                <>
+                  Send my quote request
+                  <Send size={18} />
+                </>
+              )}
             </button>
 
+            {/* SUCCESS MESSAGE */}
+            {status === "success" && (
+              <div
+                className="rounded-2xl border border-green-200 bg-green-50 p-5 text-green-800 md:col-span-2"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="flex items-start gap-3">
+                  <CheckCircle2
+                    size={22}
+                    className="mt-0.5 shrink-0"
+                  />
+
+                  <div>
+                    <p className="font-bold">
+                      Quote request received
+                    </p>
+
+                    <p className="mt-1 text-sm leading-6">
+                      {message}
+                    </p>
+
+                    {reference && (
+                      <p className="mt-2 text-sm font-semibold">
+                        Reference: {reference}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ERROR MESSAGE */}
+            {status === "error" && (
+              <div
+                className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 md:col-span-2"
+                role="alert"
+                aria-live="assertive"
+              >
+                {message}
+              </div>
+            )}
+
+            {/* PRIVACY */}
             <p className="text-center text-sm leading-6 text-slate-500 md:col-span-2">
-              Your details will only be used to respond to this enquiry.
+              Your details and photographs will only be used to process and
+              respond to your enquiry.
             </p>
           </div>
         </form>

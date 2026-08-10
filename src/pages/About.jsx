@@ -42,7 +42,7 @@ export default function About() {
 
               <div className="mt-4 flex items-center gap-8 sm:gap-10">
                 <img
-                  src="/images/partners/groutgleam-logo.png"
+                  src="/images/partners/groutgleam-logo.webp"
                   alt="GroutGleam authorised partner"
                   className="h-20 w-auto object-contain sm:h-24"
                 />
@@ -53,7 +53,7 @@ export default function About() {
                 />
 
                 <img
-                  src="/images/partners/biosteam-logo.png"
+                  src="/images/partners/biosteam-logo.webp"
                   alt="BioSteam authorised partner"
                   className="h-14 w-auto object-contain sm:h-16"
                 />

@@ -21,6 +21,8 @@ export default function ProjectCard({
           <img
             src={image}
             alt={title}
+            loading="lazy"
+            decoding="async"
             className={[
               "w-full object-cover transition duration-700 group-hover:scale-105",
               featured ? "aspect-[16/10]" : "aspect-[4/3]",

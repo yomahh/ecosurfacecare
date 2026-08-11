@@ -5,6 +5,7 @@ import {
 } from "react";
 import {
   ArrowLeft,
+  CalendarClock,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
@@ -27,26 +28,31 @@ const statusStyles = {
     className:
       "border-blue-200 bg-blue-50 text-blue-700",
   },
+
   contacted: {
     label: "Contacted",
     className:
       "border-amber-200 bg-amber-50 text-amber-700",
   },
+
   quoted: {
     label: "Quoted",
     className:
       "border-violet-200 bg-violet-50 text-violet-700",
   },
+
   booked: {
     label: "Booked",
     className:
       "border-emerald-200 bg-emerald-50 text-emerald-700",
   },
+
   completed: {
     label: "Completed",
     className:
       "border-green-200 bg-green-50 text-green-700",
   },
+
   cancelled: {
     label: "Cancelled",
     className:
@@ -90,6 +96,35 @@ function formatDate(value) {
     "en-GB",
     {
       dateStyle: "medium",
+      timeStyle: "short",
+    },
+  ).format(date);
+}
+
+/*
+ * appointment_at is intentionally stored as
+ * local business time, for example:
+ *
+ * 2026-08-18T10:30
+ *
+ * Do not append Z here because that would
+ * incorrectly treat the appointment as UTC.
+ */
+function formatAppointment(value) {
+  if (!value) {
+    return "Not scheduled";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-GB",
+    {
+      dateStyle: "full",
       timeStyle: "short",
     },
   ).format(date);
@@ -188,6 +223,21 @@ export default function AdminDashboard() {
     setQuoteAmountMessage,
   ] = useState("");
 
+  const [
+    appointmentAt,
+    setAppointmentAt,
+  ] = useState("");
+
+  const [
+    appointmentSaving,
+    setAppointmentSaving,
+  ] = useState(false);
+
+  const [
+    appointmentMessage,
+    setAppointmentMessage,
+  ] = useState("");
+
   async function loadQuotes() {
     try {
       setLoading(true);
@@ -273,6 +323,7 @@ export default function AdminDashboard() {
       setPhotos(data.photos || []);
     } catch (err) {
       console.error(err);
+
       setPhotos([]);
     } finally {
       setPhotosLoading(false);
@@ -398,6 +449,7 @@ export default function AdminDashboard() {
       setQuoteAmountMessage(
         "Please enter a valid amount.",
       );
+
       return;
     }
 
@@ -462,7 +514,9 @@ export default function AdminDashboard() {
       );
 
       setQuoteAmount(
-        (amountPence / 100).toFixed(2),
+        (
+          amountPence / 100
+        ).toFixed(2),
       );
 
       setQuoteAmountMessage(
@@ -477,6 +531,100 @@ export default function AdminDashboard() {
       );
     } finally {
       setQuoteAmountSaving(false);
+    }
+  }
+
+  async function saveAppointment(
+    reference,
+  ) {
+    if (
+      !appointmentAt ||
+      appointmentSaving
+    ) {
+      setAppointmentMessage(
+        "Please select a date and time.",
+      );
+
+      return;
+    }
+
+    try {
+      setAppointmentSaving(true);
+      setAppointmentMessage("");
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}/appointment`,
+        {
+          method: "PATCH",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            appointment_at:
+              appointmentAt,
+          }),
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to save appointment.",
+        );
+      }
+
+      const savedAppointment =
+        data.appointment_at;
+
+      setQuotes((current) =>
+        current.map((quote) =>
+          quote.reference === reference
+            ? {
+                ...quote,
+                appointment_at:
+                  savedAppointment,
+              }
+            : quote,
+        ),
+      );
+
+      setSelectedQuote((current) =>
+        current?.reference === reference
+          ? {
+              ...current,
+              appointment_at:
+                savedAppointment,
+            }
+          : current,
+      );
+
+      setAppointmentAt(
+        savedAppointment,
+      );
+
+      setAppointmentMessage(
+        "Appointment saved.",
+      );
+    } catch (err) {
+      console.error(err);
+
+      setAppointmentMessage(
+        err.message ||
+          "The appointment could not be saved.",
+      );
+    } finally {
+      setAppointmentSaving(false);
     }
   }
 
@@ -556,6 +704,7 @@ export default function AdminDashboard() {
     setNotesError("");
 
     setQuoteAmountMessage("");
+    setAppointmentMessage("");
 
     if (
       quote.quoted_amount_pence !==
@@ -573,6 +722,10 @@ export default function AdminDashboard() {
       setQuoteAmount("");
     }
 
+    setAppointmentAt(
+      quote.appointment_at || "",
+    );
+
     loadPhotos(quote.reference);
     loadNotes(quote.reference);
   }
@@ -587,6 +740,9 @@ export default function AdminDashboard() {
 
     setQuoteAmount("");
     setQuoteAmountMessage("");
+
+    setAppointmentAt("");
+    setAppointmentMessage("");
   }
 
   useEffect(() => {
@@ -712,7 +868,9 @@ export default function AdminDashboard() {
                     </h2>
 
                     <StatusBadge
-                      status={quote.status}
+                      status={
+                        quote.status
+                      }
                     />
 
                     <select
@@ -729,18 +887,23 @@ export default function AdminDashboard() {
                       <option value="new">
                         New
                       </option>
+
                       <option value="contacted">
                         Contacted
                       </option>
+
                       <option value="quoted">
                         Quoted
                       </option>
+
                       <option value="booked">
                         Booked
                       </option>
+
                       <option value="completed">
                         Completed
                       </option>
+
                       <option value="cancelled">
                         Cancelled
                       </option>
@@ -765,6 +928,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* CUSTOMER + JOB */}
             <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[0.9fr_1.1fr]">
               <div>
                 <h3 className="text-lg font-bold">
@@ -993,7 +1157,9 @@ export default function AdminDashboard() {
 
                   {quoteAmountMessage && (
                     <p className="mt-3 text-sm font-semibold text-slate-600">
-                      {quoteAmountMessage}
+                      {
+                        quoteAmountMessage
+                      }
                     </p>
                   )}
 
@@ -1007,7 +1173,117 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* PHOTOS */}
+            {/* APPOINTMENT */}
+            <div className="border-t border-slate-200 p-6 md:p-8">
+              <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+                <div>
+                  <div className="flex items-start gap-3">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-amber-50 text-amber-700">
+                      <CalendarClock
+                        size={21}
+                      />
+                    </span>
+
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">
+                        Scheduling
+                      </p>
+
+                      <h3 className="mt-1 text-xl font-bold">
+                        Appointment / job
+                      </h3>
+                    </div>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-6 text-slate-500">
+                    Save the agreed visit or job date
+                    and time for this enquiry.
+                  </p>
+
+                  <div className="mt-5 rounded-2xl bg-amber-50 p-5">
+                    <p className="text-sm font-semibold text-slate-600">
+                      Current appointment
+                    </p>
+
+                    <p className="mt-2 text-xl font-bold text-slate-900">
+                      {formatAppointment(
+                        quote.appointment_at,
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+
+                    saveAppointment(
+                      quote.reference,
+                    );
+                  }}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                >
+                  <label
+                    htmlFor="appointment-at"
+                    className="block text-sm font-bold text-slate-700"
+                  >
+                    Date and time
+                  </label>
+
+                  <input
+                    id="appointment-at"
+                    type="datetime-local"
+                    value={appointmentAt}
+                    onChange={(event) => {
+                      setAppointmentAt(
+                        event.target.value,
+                      );
+
+                      setAppointmentMessage(
+                        "",
+                      );
+                    }}
+                    className="mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 outline-none transition focus:border-[#176B1C] focus:ring-4 focus:ring-emerald-100"
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={
+                      appointmentSaving ||
+                      !appointmentAt
+                    }
+                    className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#176B1C] px-5 font-bold text-white transition hover:bg-[#0f5515] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {appointmentSaving && (
+                      <RefreshCw
+                        size={17}
+                        className="animate-spin"
+                      />
+                    )}
+
+                    {appointmentSaving
+                      ? "Saving..."
+                      : "Save appointment"}
+                  </button>
+
+                  {appointmentMessage && (
+                    <p className="mt-3 text-sm font-semibold text-slate-600">
+                      {
+                        appointmentMessage
+                      }
+                    </p>
+                  )}
+
+                  <p className="mt-4 text-xs leading-5 text-slate-500">
+                    When the customer confirms the
+                    booking, change the enquiry
+                    status to Booked.
+                  </p>
+                </form>
+              </div>
+            </div>
+
+            {/* CUSTOMER PHOTOS */}
             <div className="border-t border-slate-200 p-6 md:p-8">
               <div>
                 <h3 className="text-lg font-bold">
@@ -1387,21 +1663,27 @@ export default function AdminDashboard() {
                   <option value="all">
                     All statuses
                   </option>
+
                   <option value="new">
                     New
                   </option>
+
                   <option value="contacted">
                     Contacted
                   </option>
+
                   <option value="quoted">
                     Quoted
                   </option>
+
                   <option value="booked">
                     Booked
                   </option>
+
                   <option value="completed">
                     Completed
                   </option>
+
                   <option value="cancelled">
                     Cancelled
                   </option>
@@ -1475,7 +1757,9 @@ export default function AdminDashboard() {
                         </p>
 
                         <StatusBadge
-                          status={quote.status}
+                          status={
+                            quote.status
+                          }
                         />
                       </div>
 

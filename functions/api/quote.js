@@ -383,7 +383,11 @@ export async function onRequestPost(context) {
               service,
               description,
               photo_count,
-              status
+              status,
+              quoted_amount_pence,
+              appointment_at,
+              created_at,
+              updated_at
             )
             VALUES (
               ?,

@@ -5,12 +5,13 @@ import {
 } from "react";
 import {
   ArrowLeft,
+  Banknote,
   CalendarClock,
-  CalendarDays,
   CheckCircle2,
   ChevronDown,
   CircleDot,
   ClipboardList,
+  ExternalLink,
   LogOut,
   Mail,
   MapPin,
@@ -101,15 +102,6 @@ function formatDate(value) {
   ).format(date);
 }
 
-/*
- * appointment_at is intentionally stored as
- * local business time, for example:
- *
- * 2026-08-18T10:30
- *
- * Do not append Z here because that would
- * incorrectly treat the appointment as UTC.
- */
 function formatAppointment(value) {
   if (!value) {
     return "Not scheduled";
@@ -126,6 +118,28 @@ function formatAppointment(value) {
     {
       dateStyle: "full",
       timeStyle: "short",
+    },
+  ).format(date);
+}
+
+function formatAppointmentShort(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-GB",
+    {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
     },
   ).format(date);
 }
@@ -162,6 +176,30 @@ function StatusBadge({ status }) {
       {config.label}
     </span>
   );
+}
+
+function getEnquiryRowClass(status) {
+  if (status === "booked") {
+    return "bg-emerald-50/50 hover:bg-emerald-50";
+  }
+
+  if (status === "quoted") {
+    return "bg-violet-50/40 hover:bg-violet-50";
+  }
+
+  if (status === "new") {
+    return "bg-blue-50/30 hover:bg-blue-50/70";
+  }
+
+  if (status === "completed") {
+    return "bg-green-50/30 hover:bg-green-50/60";
+  }
+
+  if (status === "cancelled") {
+    return "bg-red-50/20 hover:bg-red-50/50";
+  }
+
+  return "hover:bg-slate-50";
 }
 
 export default function AdminDashboard() {
@@ -797,32 +835,68 @@ export default function AdminDashboard() {
           quote.status === "new",
       ).length;
 
-    const activeCount =
-      quotes.filter((quote) =>
-        [
-          "contacted",
-          "quoted",
-          "booked",
-        ].includes(quote.status),
-      ).length;
+    const quotedValuePence =
+      quotes
+        .filter(
+          (quote) =>
+            quote.status !==
+              "cancelled" &&
+            quote.quoted_amount_pence !==
+              null &&
+            quote.quoted_amount_pence !==
+              undefined,
+        )
+        .reduce(
+          (sum, quote) =>
+            sum +
+            Number(
+              quote.quoted_amount_pence,
+            ),
+          0,
+        );
 
-    const completedCount =
-      quotes.filter(
-        (quote) =>
+    const now = new Date();
+
+    const upcomingJobs =
+      quotes.filter((quote) => {
+        if (
+          !quote.appointment_at ||
           quote.status ===
-          "completed",
-      ).length;
+            "cancelled" ||
+          quote.status ===
+            "completed"
+        ) {
+          return false;
+        }
+
+        const appointment =
+          new Date(
+            quote.appointment_at,
+          );
+
+        return (
+          !Number.isNaN(
+            appointment.getTime(),
+          ) &&
+          appointment >= now
+        );
+      }).length;
 
     return {
       total,
       newCount,
-      activeCount,
-      completedCount,
+      quotedValuePence,
+      upcomingJobs,
     };
   }, [quotes]);
 
   if (selectedQuote) {
     const quote = selectedQuote;
+
+    const mapsUrl =
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        quote.postcode,
+      )}`;
 
     return (
       <div className="min-h-screen bg-slate-100">
@@ -928,6 +1002,42 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* QUICK ACTIONS */}
+            <div className="border-b border-slate-200 bg-slate-50/70 p-5 md:px-8">
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={`tel:${quote.phone}`}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#176B1C] px-5 font-bold text-white transition hover:bg-[#0f5515]"
+                >
+                  <Phone size={17} />
+                  Call customer
+                </a>
+
+                <a
+                  href={`mailto:${quote.email}?subject=${encodeURIComponent(
+                    `EcoSurfaceCare enquiry ${quote.reference}`,
+                  )}`}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 font-bold text-slate-700 transition hover:bg-slate-100"
+                >
+                  <Mail size={17} />
+                  Email customer
+                </a>
+
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-5 font-bold text-slate-700 transition hover:bg-slate-100"
+                >
+                  <MapPin size={17} />
+                  Open Maps
+                  <ExternalLink
+                    size={14}
+                  />
+                </a>
+              </div>
+            </div>
+
             {/* CUSTOMER + JOB */}
             <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[0.9fr_1.1fr]">
               <div>
@@ -1004,9 +1114,14 @@ export default function AdminDashboard() {
                         Postcode
                       </p>
 
-                      <p className="font-semibold">
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-semibold text-[#176B1C]"
+                      >
                         {quote.postcode}
-                      </p>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -1162,13 +1277,6 @@ export default function AdminDashboard() {
                       }
                     </p>
                   )}
-
-                  <p className="mt-4 text-xs leading-5 text-slate-500">
-                    Saving an amount does not change
-                    the enquiry status automatically.
-                    Change the status to Quoted when
-                    appropriate.
-                  </p>
                 </form>
               </div>
             </div>
@@ -1273,12 +1381,6 @@ export default function AdminDashboard() {
                       }
                     </p>
                   )}
-
-                  <p className="mt-4 text-xs leading-5 text-slate-500">
-                    When the customer confirms the
-                    booking, change the enquiry
-                    status to Booked.
-                  </p>
                 </form>
               </div>
             </div>
@@ -1479,7 +1581,9 @@ export default function AdminDashboard() {
                           className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
                         >
                           <p className="whitespace-pre-wrap leading-7 text-slate-700">
-                            {note.note}
+                            {
+                              note.note
+                            }
                           </p>
 
                           <div className="mt-4 flex flex-col gap-1 border-t border-slate-200 pt-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
@@ -1539,6 +1643,7 @@ export default function AdminDashboard() {
       </header>
 
       <main className="container-site py-8 md:py-10">
+        {/* DASHBOARD METRICS */}
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <ClipboardList className="text-[#176B1C]" />
@@ -1565,30 +1670,33 @@ export default function AdminDashboard() {
           </article>
 
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <CalendarDays className="text-amber-600" />
+            <Banknote className="text-violet-600" />
 
             <p className="mt-5 text-3xl font-bold">
-              {stats.activeCount}
+              {formatMoney(
+                stats.quotedValuePence,
+              )}
             </p>
 
             <p className="mt-1 text-slate-500">
-              In progress
+              Total quoted value
             </p>
           </article>
 
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <CheckCircle2 className="text-emerald-600" />
+            <CalendarClock className="text-amber-600" />
 
             <p className="mt-5 text-3xl font-bold">
-              {stats.completedCount}
+              {stats.upcomingJobs}
             </p>
 
             <p className="mt-1 text-slate-500">
-              Completed
+              Upcoming jobs
             </p>
           </article>
         </div>
 
+        {/* ENQUIRIES */}
         <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 p-6">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
@@ -1748,8 +1856,15 @@ export default function AdminDashboard() {
                     onClick={() =>
                       openQuote(quote)
                     }
-                    className="grid w-full gap-4 p-5 text-left transition hover:bg-slate-50 md:grid-cols-[1.25fr_.9fr_.8fr_auto] md:items-center md:px-6"
+                    className={[
+                      "grid w-full gap-4 p-5 text-left transition",
+                      "md:grid-cols-[1.25fr_.9fr_.85fr_.85fr_auto] md:items-center md:px-6",
+                      getEnquiryRowClass(
+                        quote.status,
+                      ),
+                    ].join(" ")}
                   >
+                    {/* CUSTOMER */}
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-bold text-slate-900">
@@ -1770,6 +1885,7 @@ export default function AdminDashboard() {
                       </p>
                     </div>
 
+                    {/* SERVICE */}
                     <div>
                       <p className="text-sm font-semibold text-slate-700">
                         {serviceLabels[
@@ -1781,20 +1897,42 @@ export default function AdminDashboard() {
                       </p>
 
                       <p className="mt-1 text-sm text-slate-500">
-                        {friendlyValue(
-                          quote.property_type,
-                        )}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold text-slate-700">
                         {
                           quote.postcode
                         }
                       </p>
+                    </div>
 
-                      <p className="mt-1 text-sm text-slate-500">
+                    {/* MONEY */}
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        Quote
+                      </p>
+
+                      <p className="mt-1 font-bold text-slate-800">
+                        {formatMoney(
+                          quote.quoted_amount_pence,
+                        )}
+                      </p>
+                    </div>
+
+                    {/* APPOINTMENT */}
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        Appointment
+                      </p>
+
+                      <p className="mt-1 text-sm font-semibold text-slate-700">
+                        {formatAppointmentShort(
+                          quote.appointment_at,
+                        ) ||
+                          "Not scheduled"}
+                      </p>
+                    </div>
+
+                    {/* VIEW */}
+                    <div className="md:text-right">
+                      <p className="text-xs text-slate-500">
                         {
                           quote.photo_count
                         }{" "}
@@ -1803,14 +1941,6 @@ export default function AdminDashboard() {
                         1
                           ? ""
                           : "s"}
-                      </p>
-                    </div>
-
-                    <div className="md:text-right">
-                      <p className="text-sm text-slate-500">
-                        {formatDate(
-                          quote.created_at,
-                        )}
                       </p>
 
                       <p className="mt-2 text-sm font-bold text-[#176B1C]">

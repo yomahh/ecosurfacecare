@@ -38,7 +38,7 @@ export default function CTA() {
       />
 
       <div className="container-site relative pt-8 pb-16 md:pt-10 md:pb-20">
-        <div className="overflow-hidden rounded-[2.25rem] bg-[#228B22] shadow-[0_28px_80px_rgba(23,53,47,0.18)]">
+        <div className="overflow-hidden rounded-[2.25rem] bg-[#176B1C] shadow-[0_28px_80px_rgba(23,53,47,0.18)]">
           <div className="grid gap-10 p-8 md:p-12 lg:grid-cols-[1fr_.9fr] lg:p-14">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-white">
@@ -49,7 +49,7 @@ export default function CTA() {
                 Ready to bring your surfaces back to life?
               </h2>
 
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-emerald-50/85">
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-emerald-50">
                 Tell us what needs attention and include photographs where
                 possible. We’ll review the details and contact you about the
                 most suitable next step.

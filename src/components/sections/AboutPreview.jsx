@@ -48,7 +48,7 @@ export default function AboutPreview() {
             Professional surface care with a responsible direction.
           </h2>
 
-          <p className="relative mt-6 max-w-2xl text-lg leading-8 text-emerald-50/85">
+          <p className="relative mt-6 max-w-2xl text-lg leading-8 text-emerald-50">
             EcoSurfaceCare specialises in cleaning, restoring and maintaining
             hard surfaces in homes and commercial spaces. Our goal is to
             deliver visible results while helping customers preserve existing

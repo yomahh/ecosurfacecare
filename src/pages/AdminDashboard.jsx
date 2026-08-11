@@ -59,14 +59,13 @@ const statusStyles = {
 
 const serviceLabels = {
   "grout-cleaning": "Grout Cleaning",
-  "grout-recolouring":
-    "Grout Recolouring",
-  "tile-cleaning": "Tile Cleaning",
-  "surface-cleaning":
-    "Surface Cleaning",
-  "steam-cleaning":
-    "Steam Cleaning",
-  commercial: "Commercial",
+  "grout-recolouring": "Grout Recolouring",
+  biosteam: "BioSteam Deep Cleaning",
+  "surface-restoration": "Tile & Surface Restoration",
+  bathroom: "Bathroom & Shower Restoration",
+  kitchen: "Kitchen Surface Care",
+  floor: "Floor Cleaning & Maintenance",
+  commercial: "Commercial Surface Cleaning",
 };
 
 function friendlyValue(value = "") {
@@ -138,6 +137,15 @@ export default function AdminDashboard() {
   const [selectedQuote, setSelectedQuote] =
     useState(null);
 
+  const [photos, setPhotos] =
+    useState([]);
+
+  const [photosLoading, setPhotosLoading] =
+    useState(false);
+
+  const [statusSaving, setStatusSaving] =
+    useState(false);
+
   async function loadQuotes() {
     try {
       setLoading(true);
@@ -183,6 +191,116 @@ export default function AdminDashboard() {
       );
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadPhotos(reference) {
+    try {
+      setPhotosLoading(true);
+      setPhotos([]);
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}/photos`,
+        {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Photo request failed with status ${response.status}`,
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(
+          data.message ||
+            "Unable to load photos.",
+        );
+      }
+
+      setPhotos(data.photos || []);
+    } catch (err) {
+      console.error(err);
+      setPhotos([]);
+    } finally {
+      setPhotosLoading(false);
+    }
+  }
+
+  async function updateStatus(
+    reference,
+    status,
+  ) {
+    try {
+      setStatusSaving(true);
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}`,
+        {
+          method: "PATCH",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            status,
+          }),
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to update status.",
+        );
+      }
+
+      setQuotes((current) =>
+        current.map((quote) =>
+          quote.reference === reference
+            ? {
+                ...quote,
+                status,
+              }
+            : quote,
+        ),
+      );
+
+      setSelectedQuote((current) =>
+        current?.reference === reference
+          ? {
+              ...current,
+              status,
+            }
+          : current,
+      );
+    } catch (err) {
+      console.error(err);
+
+      window.alert(
+        "The enquiry status could not be updated.",
+      );
+    } finally {
+      setStatusSaving(false);
     }
   }
 
@@ -292,9 +410,10 @@ export default function AdminDashboard() {
         <main className="container-site py-8 md:py-10">
           <button
             type="button"
-            onClick={() =>
-              setSelectedQuote(null)
-            }
+            onClick={() => {
+              setSelectedQuote(null);
+              setPhotos([]);
+            }}
             className="inline-flex items-center gap-2 font-bold text-[#176B1C]"
           >
             <ArrowLeft size={18} />
@@ -303,7 +422,7 @@ export default function AdminDashboard() {
 
           <section className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-200 p-6 md:p-8">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-2xl font-bold text-slate-900">
@@ -315,6 +434,42 @@ export default function AdminDashboard() {
                         quote.status
                       }
                     />
+
+                    <select
+                      value={quote.status}
+                      disabled={statusSaving}
+                      onChange={(event) =>
+                        updateStatus(
+                          quote.reference,
+                          event.target.value,
+                        )
+                      }
+                      className="min-h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold outline-none transition focus:border-[#176B1C] focus:ring-4 focus:ring-emerald-100 disabled:opacity-50"
+                    >
+                      <option value="new">
+                        New
+                      </option>
+
+                      <option value="contacted">
+                        Contacted
+                      </option>
+
+                      <option value="quoted">
+                        Quoted
+                      </option>
+
+                      <option value="booked">
+                        Booked
+                      </option>
+
+                      <option value="completed">
+                        Completed
+                      </option>
+
+                      <option value="cancelled">
+                        Cancelled
+                      </option>
+                    </select>
                   </div>
 
                   <p className="mt-2 text-slate-500">
@@ -465,6 +620,64 @@ export default function AdminDashboard() {
                 </dl>
               </div>
             </div>
+
+            <div className="border-t border-slate-200 p-6 md:p-8">
+              <div>
+                <h3 className="text-lg font-bold">
+                  Customer photos
+                </h3>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Photos supplied with this quote request.
+                </p>
+              </div>
+
+              {photosLoading ? (
+                <div className="mt-6 flex items-center gap-3 text-slate-500">
+                  <RefreshCw
+                    size={18}
+                    className="animate-spin"
+                  />
+
+                  Loading photos...
+                </div>
+              ) : photos.length === 0 ? (
+                <div className="mt-6 rounded-2xl bg-slate-50 p-6 text-sm text-slate-500">
+                  No photographs were supplied with this enquiry.
+                </div>
+              ) : (
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {photos.map(
+                    (photo, index) => (
+                      <a
+                        key={photo.key}
+                        href={photo.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"
+                      >
+                        <img
+                          src={photo.url}
+                          alt={`Quote ${quote.reference} photo ${
+                            index + 1
+                          }`}
+                          loading="lazy"
+                          decoding="async"
+                          className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                        />
+
+                        <div className="p-3">
+                          <p className="text-sm font-semibold text-slate-700">
+                            Photo{" "}
+                            {index + 1}
+                          </p>
+                        </div>
+                      </a>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
           </section>
         </main>
       </div>
@@ -581,6 +794,7 @@ export default function AdminDashboard() {
                       : ""
                   }
                 />
+
                 Refresh
               </button>
             </div>
@@ -660,7 +874,8 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {loading && quotes.length === 0 ? (
+          {loading &&
+          quotes.length === 0 ? (
             <div className="grid min-h-64 place-items-center p-8">
               <div className="text-center">
                 <RefreshCw className="mx-auto animate-spin text-[#176B1C]" />
@@ -684,9 +899,13 @@ export default function AdminDashboard() {
                 Try again
               </button>
             </div>
-          ) : filteredQuotes.length === 0 ? (
+          ) : filteredQuotes.length ===
+            0 ? (
             <div className="p-10 text-center">
-              <ClipboardList className="mx-auto text-slate-300" size={36} />
+              <ClipboardList
+                className="mx-auto text-slate-300"
+                size={36}
+              />
 
               <h3 className="mt-4 text-lg font-bold">
                 No enquiries found
@@ -703,11 +922,15 @@ export default function AdminDashboard() {
                   <button
                     key={quote.id}
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
                       setSelectedQuote(
                         quote,
-                      )
-                    }
+                      );
+
+                      loadPhotos(
+                        quote.reference,
+                      );
+                    }}
                     className="grid w-full gap-4 p-5 text-left transition hover:bg-slate-50 md:grid-cols-[1.25fr_.9fr_.8fr_auto] md:items-center md:px-6"
                   >
                     <div>

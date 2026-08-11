@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Button from "../ui/Button";
 
@@ -22,7 +22,10 @@ export default function Header() {
     };
 
     handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -68,20 +71,18 @@ export default function Header() {
             scrolled ? "h-[72px]" : "h-[88px]",
           ].join(" ")}
         >
-          <Link
-            to="/"
-            className="relative z-50 flex shrink-0 items-center"
-            aria-label="EcoSurfaceCare homepage"
-          >
+          <NavLink to="/" aria-label="EcoSurfaceCare home">
             <img
               src="/images/branding/ecosurfacecare-logo-header.webp"
               alt="EcoSurfaceCare"
+              width="400"
+              height="267"
               className={[
                 "w-auto object-contain transition-all duration-300",
                 scrolled ? "h-16 max-w-[260px]" : "h-20 max-w-[300px]",
               ].join(" ")}
             />
-          </Link>
+          </NavLink>
 
           <nav
             className="hidden items-center gap-7 lg:flex"
@@ -109,7 +110,9 @@ export default function Header() {
             type="button"
             onClick={() => setMenuOpen((current) => !current)}
             className="relative z-50 grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white text-heading shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:hidden"
-            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={
+              menuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
           >
@@ -118,6 +121,7 @@ export default function Header() {
         </div>
       </header>
 
+      {/* Mobile menu backdrop */}
       <div
         className={[
           "fixed inset-0 z-40 bg-[rgba(16,47,20,0.30)] backdrop-blur-sm transition-opacity duration-300 lg:hidden",
@@ -129,6 +133,7 @@ export default function Header() {
         aria-hidden="true"
       />
 
+      {/* Mobile navigation drawer */}
       <aside
         id="mobile-navigation"
         className={[
@@ -136,7 +141,7 @@ export default function Header() {
           menuOpen ? "translate-x-0" : "translate-x-full",
         ].join(" ")}
         aria-hidden={!menuOpen}
-        inert={!menuOpen ? "" : undefined}
+        inert={!menuOpen}
       >
         <nav className="flex flex-col" aria-label="Mobile navigation">
           {navigation.map(({ to, label, end }) => (
@@ -144,6 +149,8 @@ export default function Header() {
               key={to}
               to={to}
               end={end}
+              tabIndex={menuOpen ? 0 : -1}
+              onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>
                 [
                   "border-b border-slate-100 py-5 text-xl font-bold transition-colors",
@@ -163,6 +170,8 @@ export default function Header() {
             to="/request-a-quote"
             size="large"
             className="w-full"
+            tabIndex={menuOpen ? 0 : -1}
+            onClick={() => setMenuOpen(false)}
           >
             Request a Free Quote
           </Button>

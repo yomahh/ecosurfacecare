@@ -67,19 +67,21 @@ export async function onRequestGet(
         .prepare(
           `
             SELECT
-              id,
-              reference,
-              name,
-              email,
-              phone,
-              postcode,
-              property_type,
-              service,
-              description,
-              photo_count,
-              status,
-              created_at,
-              updated_at
+          id,
+          reference,
+          name,
+          email,
+          phone,
+          postcode,
+          property_type,
+          service,
+          description,
+          photo_count,
+          status,
+          quoted_amount_pence,
+          appointment_at,
+          created_at,
+          updated_at
             FROM quotes
             ORDER BY
               datetime(created_at) DESC,

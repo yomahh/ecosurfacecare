@@ -27,31 +27,26 @@ const statusStyles = {
     className:
       "border-blue-200 bg-blue-50 text-blue-700",
   },
-
   contacted: {
     label: "Contacted",
     className:
       "border-amber-200 bg-amber-50 text-amber-700",
   },
-
   quoted: {
     label: "Quoted",
     className:
       "border-violet-200 bg-violet-50 text-violet-700",
   },
-
   booked: {
     label: "Booked",
     className:
       "border-emerald-200 bg-emerald-50 text-emerald-700",
   },
-
   completed: {
     label: "Completed",
     className:
       "border-green-200 bg-green-50 text-green-700",
   },
-
   cancelled: {
     label: "Cancelled",
     className:
@@ -98,6 +93,23 @@ function formatDate(value) {
       timeStyle: "short",
     },
   ).format(date);
+}
+
+function formatMoney(pence) {
+  if (
+    pence === null ||
+    pence === undefined
+  ) {
+    return "Not set";
+  }
+
+  return new Intl.NumberFormat(
+    "en-GB",
+    {
+      style: "currency",
+      currency: "GBP",
+    },
+  ).format(pence / 100);
 }
 
 function StatusBadge({ status }) {
@@ -162,6 +174,19 @@ export default function AdminDashboard() {
 
   const [noteSaving, setNoteSaving] =
     useState(false);
+
+  const [quoteAmount, setQuoteAmount] =
+    useState("");
+
+  const [
+    quoteAmountSaving,
+    setQuoteAmountSaving,
+  ] = useState(false);
+
+  const [
+    quoteAmountMessage,
+    setQuoteAmountMessage,
+  ] = useState("");
 
   async function loadQuotes() {
     try {
@@ -357,6 +382,104 @@ export default function AdminDashboard() {
     }
   }
 
+  async function saveQuoteAmount(
+    reference,
+  ) {
+    const rawAmount =
+      quoteAmount.trim();
+
+    const amount = Number(rawAmount);
+
+    if (
+      rawAmount === "" ||
+      !Number.isFinite(amount) ||
+      amount < 0
+    ) {
+      setQuoteAmountMessage(
+        "Please enter a valid amount.",
+      );
+      return;
+    }
+
+    try {
+      setQuoteAmountSaving(true);
+      setQuoteAmountMessage("");
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}/quote-amount`,
+        {
+          method: "PATCH",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            amount,
+          }),
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to save quote amount.",
+        );
+      }
+
+      const amountPence =
+        data.quoted_amount_pence;
+
+      setQuotes((current) =>
+        current.map((quote) =>
+          quote.reference === reference
+            ? {
+                ...quote,
+                quoted_amount_pence:
+                  amountPence,
+              }
+            : quote,
+        ),
+      );
+
+      setSelectedQuote((current) =>
+        current?.reference === reference
+          ? {
+              ...current,
+              quoted_amount_pence:
+                amountPence,
+            }
+          : current,
+      );
+
+      setQuoteAmount(
+        (amountPence / 100).toFixed(2),
+      );
+
+      setQuoteAmountMessage(
+        "Quote amount saved.",
+      );
+    } catch (err) {
+      console.error(err);
+
+      setQuoteAmountMessage(
+        err.message ||
+          "The quote amount could not be saved.",
+      );
+    } finally {
+      setQuoteAmountSaving(false);
+    }
+  }
+
   async function updateStatus(
     reference,
     status,
@@ -432,6 +555,24 @@ export default function AdminDashboard() {
     setNotes([]);
     setNotesError("");
 
+    setQuoteAmountMessage("");
+
+    if (
+      quote.quoted_amount_pence !==
+        null &&
+      quote.quoted_amount_pence !==
+        undefined
+    ) {
+      setQuoteAmount(
+        (
+          quote.quoted_amount_pence /
+          100
+        ).toFixed(2),
+      );
+    } else {
+      setQuoteAmount("");
+    }
+
     loadPhotos(quote.reference);
     loadNotes(quote.reference);
   }
@@ -443,6 +584,9 @@ export default function AdminDashboard() {
     setNotes([]);
     setNewNote("");
     setNotesError("");
+
+    setQuoteAmount("");
+    setQuoteAmountMessage("");
   }
 
   useEffect(() => {
@@ -568,9 +712,7 @@ export default function AdminDashboard() {
                     </h2>
 
                     <StatusBadge
-                      status={
-                        quote.status
-                      }
+                      status={quote.status}
                     />
 
                     <select
@@ -587,23 +729,18 @@ export default function AdminDashboard() {
                       <option value="new">
                         New
                       </option>
-
                       <option value="contacted">
                         Contacted
                       </option>
-
                       <option value="quoted">
                         Quoted
                       </option>
-
                       <option value="booked">
                         Booked
                       </option>
-
                       <option value="completed">
                         Completed
                       </option>
-
                       <option value="cancelled">
                         Cancelled
                       </option>
@@ -759,6 +896,118 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* QUOTED AMOUNT */}
+            <div className="border-t border-slate-200 p-6 md:p-8">
+              <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">
+                    Commercial details
+                  </p>
+
+                  <h3 className="mt-2 text-xl font-bold">
+                    Quoted amount
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Store the amount quoted to this
+                    customer. This is private and is
+                    not shown on the public website.
+                  </p>
+
+                  <div className="mt-5 rounded-2xl bg-emerald-50 p-5">
+                    <p className="text-sm font-semibold text-slate-600">
+                      Current quote
+                    </p>
+
+                    <p className="mt-1 text-3xl font-bold text-[#176B1C]">
+                      {formatMoney(
+                        quote.quoted_amount_pence,
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+
+                    saveQuoteAmount(
+                      quote.reference,
+                    );
+                  }}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                >
+                  <label
+                    htmlFor="quote-amount"
+                    className="block text-sm font-bold text-slate-700"
+                  >
+                    Quote amount
+                  </label>
+
+                  <div className="mt-2 flex">
+                    <span className="grid min-h-12 place-items-center rounded-l-xl border border-r-0 border-slate-300 bg-white px-4 font-bold text-slate-600">
+                      £
+                    </span>
+
+                    <input
+                      id="quote-amount"
+                      type="number"
+                      min="0"
+                      max="1000000"
+                      step="0.01"
+                      inputMode="decimal"
+                      value={quoteAmount}
+                      onChange={(event) => {
+                        setQuoteAmount(
+                          event.target.value,
+                        );
+
+                        setQuoteAmountMessage(
+                          "",
+                        );
+                      }}
+                      placeholder="240.00"
+                      className="min-h-12 min-w-0 flex-1 rounded-r-xl border border-slate-300 bg-white px-4 outline-none transition focus:border-[#176B1C] focus:ring-4 focus:ring-emerald-100"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={
+                      quoteAmountSaving ||
+                      !quoteAmount.trim()
+                    }
+                    className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#176B1C] px-5 font-bold text-white transition hover:bg-[#0f5515] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {quoteAmountSaving && (
+                      <RefreshCw
+                        size={17}
+                        className="animate-spin"
+                      />
+                    )}
+
+                    {quoteAmountSaving
+                      ? "Saving..."
+                      : "Save amount"}
+                  </button>
+
+                  {quoteAmountMessage && (
+                    <p className="mt-3 text-sm font-semibold text-slate-600">
+                      {quoteAmountMessage}
+                    </p>
+                  )}
+
+                  <p className="mt-4 text-xs leading-5 text-slate-500">
+                    Saving an amount does not change
+                    the enquiry status automatically.
+                    Change the status to Quoted when
+                    appropriate.
+                  </p>
+                </form>
+              </div>
+            </div>
+
+            {/* PHOTOS */}
             <div className="border-t border-slate-200 p-6 md:p-8">
               <div>
                 <h3 className="text-lg font-bold">
@@ -817,6 +1066,7 @@ export default function AdminDashboard() {
               )}
             </div>
 
+            {/* INTERNAL NOTES */}
             <div className="border-t border-slate-200 p-6 md:p-8">
               <div className="flex items-start gap-3">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-[#176B1C]">
@@ -1137,27 +1387,21 @@ export default function AdminDashboard() {
                   <option value="all">
                     All statuses
                   </option>
-
                   <option value="new">
                     New
                   </option>
-
                   <option value="contacted">
                     Contacted
                   </option>
-
                   <option value="quoted">
                     Quoted
                   </option>
-
                   <option value="booked">
                     Booked
                   </option>
-
                   <option value="completed">
                     Completed
                   </option>
-
                   <option value="cancelled">
                     Cancelled
                   </option>
@@ -1231,9 +1475,7 @@ export default function AdminDashboard() {
                         </p>
 
                         <StatusBadge
-                          status={
-                            quote.status
-                          }
+                          status={quote.status}
                         />
                       </div>
 

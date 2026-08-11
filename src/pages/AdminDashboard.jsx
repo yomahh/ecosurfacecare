@@ -912,6 +912,30 @@ const stats = useMemo(() => {
       .slice(0, 5);
   }, [quotes]);
 
+  const completedJobsList = useMemo(() => {
+    return quotes
+      .filter(
+        (quote) =>
+          quote.status === "completed",
+      )
+      .sort((a, b) => {
+        const aDate = new Date(
+          a.appointment_at ||
+            a.updated_at ||
+            a.created_at,
+        );
+
+        const bDate = new Date(
+          b.appointment_at ||
+            b.updated_at ||
+            b.created_at,
+        );
+
+        return bDate - aDate;
+      })
+      .slice(0, 5);
+  }, [quotes]);
+
   if (selectedQuote) {
     const quote = selectedQuote;
 
@@ -1666,7 +1690,6 @@ const stats = useMemo(() => {
 
       <main className="container-site py-8 md:py-10">
         {/* DASHBOARD METRICS */}
-        {/* DASHBOARD METRICS */}
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <ClipboardList className="text-[#176B1C]" />
@@ -1818,6 +1841,117 @@ const stats = useMemo(() => {
                   <div className="md:text-right">
                     <p className="text-sm font-bold text-[#176B1C]">
                       Open job →
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* COMPLETED JOBS */}
+        <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-3 border-b border-slate-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <CheckCircle2 size={21} />
+              </span>
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Completed jobs
+                </h2>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Recently completed work and recorded revenue.
+                </p>
+              </div>
+            </div>
+
+            {completedJobsList.length > 0 && (
+              <span className="self-start rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-700 sm:self-auto">
+                {completedJobsList.length} shown
+              </span>
+            )}
+          </div>
+
+          {completedJobsList.length === 0 ? (
+            <div className="p-8 text-center">
+              <CheckCircle2
+                size={34}
+                className="mx-auto text-slate-300"
+              />
+
+              <h3 className="mt-4 text-lg font-bold text-slate-900">
+                No completed jobs yet
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Jobs will appear here when their status is changed to Completed.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-200">
+              {completedJobsList.map((quote) => (
+                <button
+                  key={quote.id}
+                  type="button"
+                  onClick={() => openQuote(quote)}
+                  className="grid w-full gap-4 p-5 text-left transition hover:bg-emerald-50/50 md:grid-cols-[1.15fr_.95fr_.85fr_.8fr_auto] md:items-center md:px-6"
+                >
+                  <div>
+                    <p className="font-bold text-slate-900">
+                      {quote.name}
+                    </p>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <StatusBadge status={quote.status} />
+                      <span className="text-xs font-semibold text-[#176B1C]">
+                        {quote.reference}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {serviceLabels[quote.service] ||
+                        friendlyValue(quote.service)}
+                    </p>
+
+                    <p className="mt-1 text-sm text-slate-500">
+                      {quote.postcode}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      Job date
+                    </p>
+
+                    <p className="mt-1 text-sm font-bold text-slate-800">
+                      {quote.appointment_at
+                        ? formatAppointmentShort(
+                            quote.appointment_at,
+                          )
+                        : "Not recorded"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      Revenue
+                    </p>
+
+                    <p className="mt-1 font-bold text-emerald-700">
+                      {formatMoney(
+                        quote.quoted_amount_pence,
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="md:text-right">
+                    <p className="text-sm font-bold text-[#176B1C]">
+                      View job →
                     </p>
                   </div>
                 </button>

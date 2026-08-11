@@ -101,9 +101,27 @@ export async function onRequestPost(context) {
     }
 
     /*
+     * D1 database binding
+     */
+    if (!env.ecosurfacecare_db) {
+      console.error(
+        "D1 binding ecosurfacecare_db is not configured.",
+      );
+
+      return json(
+        {
+          success: false,
+          message: "Quote storage is not configured.",
+        },
+        500,
+      );
+    }
+
+    /*
      * Request format
      */
-    const contentType = request.headers.get("content-type") || "";
+    const contentType =
+      request.headers.get("content-type") || "";
 
     if (!contentType.includes("multipart/form-data")) {
       return json(
@@ -124,6 +142,7 @@ export async function onRequestPost(context) {
      * - generating the quote reference
      * - uploading photos
      * - using R2 storage
+     * - writing to D1
      * - sending emails
      */
     const turnstileToken = String(
@@ -168,10 +187,21 @@ export async function onRequestPost(context) {
     /*
      * Read form fields
      */
-    const name = String(formData.get("name") || "").trim();
-    const email = String(formData.get("email") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
-    const postcode = String(formData.get("postcode") || "").trim();
+    const name = String(
+      formData.get("name") || "",
+    ).trim();
+
+    const email = String(
+      formData.get("email") || "",
+    ).trim();
+
+    const phone = String(
+      formData.get("phone") || "",
+    ).trim();
+
+    const postcode = String(
+      formData.get("postcode") || "",
+    ).trim();
 
     const propertyType = String(
       formData.get("propertyType") || "",
@@ -185,7 +215,8 @@ export async function onRequestPost(context) {
       formData.get("description") || "",
     ).trim();
 
-    const consent = formData.get("consent") === "on";
+    const consent =
+      formData.get("consent") === "on";
 
     /*
      * Required field validation
@@ -212,13 +243,15 @@ export async function onRequestPost(context) {
     /*
      * Email validation
      */
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailPattern =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
       return json(
         {
           success: false,
-          message: "Please provide a valid email address.",
+          message:
+            "Please provide a valid email address.",
         },
         400,
       );
@@ -256,7 +289,8 @@ export async function onRequestPost(context) {
       return json(
         {
           success: false,
-          message: `You can upload up to ${maxPhotos} photos.`,
+          message:
+            `You can upload up to ${maxPhotos} photos.`,
         },
         400,
       );
@@ -278,7 +312,8 @@ export async function onRequestPost(context) {
         return json(
           {
             success: false,
-            message: "Each photo must be smaller than 12 MB.",
+            message:
+              "Each photo must be smaller than 12 MB.",
           },
           400,
         );
@@ -301,18 +336,23 @@ export async function onRequestPost(context) {
       const key =
         `quotes/${reference}/photo-${index + 1}.${extension}`;
 
-      const arrayBuffer = await photo.arrayBuffer();
+      const arrayBuffer =
+        await photo.arrayBuffer();
 
-      await env.QUOTE_IMAGES.put(key, arrayBuffer, {
-        httpMetadata: {
-          contentType: photo.type,
-        },
+      await env.QUOTE_IMAGES.put(
+        key,
+        arrayBuffer,
+        {
+          httpMetadata: {
+            contentType: photo.type,
+          },
 
-        customMetadata: {
-          quoteReference: reference,
-          originalFilename: photo.name,
+          customMetadata: {
+            quoteReference: reference,
+            originalFilename: photo.name,
+          },
         },
-      });
+      );
 
       uploadedPhotos.push({
         key,
@@ -324,7 +364,89 @@ export async function onRequestPost(context) {
     }
 
     /*
-     * Escape customer values before inserting into HTML
+     * Store quote metadata in D1
+     *
+     * R2 stores the photographs.
+     * D1 stores the structured quote information.
+     */
+    try {
+      await env.ecosurfacecare_db
+        .prepare(
+          `
+            INSERT INTO quotes (
+              reference,
+              name,
+              email,
+              phone,
+              postcode,
+              property_type,
+              service,
+              description,
+              photo_count,
+              status
+            )
+            VALUES (
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              'new'
+            )
+          `,
+        )
+        .bind(
+          reference,
+          name,
+          email,
+          phone,
+          postcode,
+          propertyType,
+          service,
+          description,
+          uploadedPhotos.length,
+        )
+        .run();
+    } catch (databaseError) {
+      console.error(
+        "Failed to store quote in D1:",
+        databaseError,
+      );
+
+      /*
+       * Remove any photos already uploaded for this
+       * quote so we don't leave orphaned R2 objects
+       * when the D1 record cannot be created.
+       */
+      for (const photo of uploadedPhotos) {
+        try {
+          await env.QUOTE_IMAGES.delete(photo.key);
+        } catch (cleanupError) {
+          console.error(
+            "Failed to clean up R2 photo:",
+            photo.key,
+            cleanupError,
+          );
+        }
+      }
+
+      return json(
+        {
+          success: false,
+          message:
+            "We could not save your quote request. Please try again.",
+        },
+        500,
+      );
+    }
+
+    /*
+     * Escape customer values before inserting
+     * them into HTML emails.
      */
     const safe = {
       reference: escapeHtml(reference),
@@ -332,7 +454,8 @@ export async function onRequestPost(context) {
       email: escapeHtml(email),
       phone: escapeHtml(phone),
       postcode: escapeHtml(postcode),
-      propertyType: escapeHtml(propertyType),
+      propertyType:
+        escapeHtml(propertyType),
       service: escapeHtml(service),
       description: escapeHtml(description),
     };
@@ -340,10 +463,14 @@ export async function onRequestPost(context) {
     /*
      * Create Resend-compatible attachments
      */
-    const attachments = uploadedPhotos.map((photo) => ({
-      filename: photo.filename,
-      content: arrayBufferToBase64(photo.content),
-    }));
+    const attachments = uploadedPhotos.map(
+      (photo) => ({
+        filename: photo.filename,
+        content: arrayBufferToBase64(
+          photo.content,
+        ),
+      }),
+    );
 
     /*
      * Photo information shown in business email
@@ -357,7 +484,11 @@ export async function onRequestPost(context) {
 
           <p>
             ${uploadedPhotos.length}
-            photo${uploadedPhotos.length === 1 ? "" : "s"}
+            photo${
+              uploadedPhotos.length === 1
+                ? ""
+                : "s"
+            }
             uploaded and attached to this email.
           </p>
 
@@ -365,7 +496,9 @@ export async function onRequestPost(context) {
             ${uploadedPhotos
               .map(
                 (photo) =>
-                  `<li>${escapeHtml(photo.filename)}</li>`,
+                  `<li>${escapeHtml(
+                    photo.filename,
+                  )}</li>`,
               )
               .join("")}
           </ul>
@@ -388,123 +521,125 @@ export async function onRequestPost(context) {
     /*
      * Initialise Resend
      */
-    const resend = new Resend(env.RESEND_API_KEY);
+    const resend =
+      new Resend(env.RESEND_API_KEY);
 
     /*
      * EMAIL 1
      * Internal business notification
      */
-    const internalEmail = await resend.emails.send({
-      from:
-        "EcoSurfaceCare Quotes <quotes@notifications.ecosurfacecare.co.uk>",
+    const internalEmail =
+      await resend.emails.send({
+        from:
+          "EcoSurfaceCare Quotes <quotes@notifications.ecosurfacecare.co.uk>",
 
-      to: ["bb@groutgleam.co.uk"],
+        to: ["bb@groutgleam.co.uk"],
 
-      replyTo: email,
+        replyTo: email,
 
-      subject:
-        `New EcoSurfaceCare quote request — ${reference}`,
+        subject:
+          `New EcoSurfaceCare quote request — ${reference}`,
 
-      attachments,
+        attachments,
 
-      html: `
-        <div
-          style="
-            font-family:Arial,sans-serif;
-            max-width:680px;
-            margin:0 auto;
-            color:#173b1a;
-          "
-        >
-          <h1 style="color:#228b22;">
-            New quote request
-          </h1>
-
-          <p>
-            A new quote request has been submitted through
-            the EcoSurfaceCare website.
-          </p>
-
+        html: `
           <div
             style="
-              background:#f5faf3;
-              border:1px solid #dce7dc;
-              border-radius:16px;
-              padding:20px;
-              margin:24px 0;
+              font-family:Arial,sans-serif;
+              max-width:680px;
+              margin:0 auto;
+              color:#173b1a;
             "
           >
-            <p>
-              <strong>Reference:</strong>
-              ${safe.reference}
-            </p>
+            <h1 style="color:#228b22;">
+              New quote request
+            </h1>
 
             <p>
-              <strong>Name:</strong>
-              ${safe.name}
+              A new quote request has been submitted through
+              the EcoSurfaceCare website.
             </p>
 
-            <p>
-              <strong>Email:</strong>
-              ${safe.email}
+            <div
+              style="
+                background:#f5faf3;
+                border:1px solid #dce7dc;
+                border-radius:16px;
+                padding:20px;
+                margin:24px 0;
+              "
+            >
+              <p>
+                <strong>Reference:</strong>
+                ${safe.reference}
+              </p>
+
+              <p>
+                <strong>Name:</strong>
+                ${safe.name}
+              </p>
+
+              <p>
+                <strong>Email:</strong>
+                ${safe.email}
+              </p>
+
+              <p>
+                <strong>Phone:</strong>
+                ${safe.phone}
+              </p>
+
+              <p>
+                <strong>Postcode:</strong>
+                ${safe.postcode}
+              </p>
+
+              <p>
+                <strong>Property type:</strong>
+                ${safe.propertyType}
+              </p>
+
+              <p>
+                <strong>Service:</strong>
+                ${safe.service}
+              </p>
+            </div>
+
+            <h2>
+              Project description
+            </h2>
+
+            <p
+              style="
+                white-space:pre-wrap;
+                line-height:1.6;
+              "
+            >
+              ${safe.description}
             </p>
 
-            <p>
-              <strong>Phone:</strong>
-              ${safe.phone}
-            </p>
+            ${photoSummary}
 
-            <p>
-              <strong>Postcode:</strong>
-              ${safe.postcode}
-            </p>
+            <hr
+              style="
+                border:none;
+                border-top:1px solid #dce7dc;
+                margin:28px 0;
+              "
+            />
 
-            <p>
-              <strong>Property type:</strong>
-              ${safe.propertyType}
-            </p>
-
-            <p>
-              <strong>Service:</strong>
-              ${safe.service}
+            <p
+              style="
+                font-size:13px;
+                color:#667085;
+              "
+            >
+              Reply to this email to respond directly to
+              ${safe.name}.
             </p>
           </div>
-
-          <h2>
-            Project description
-          </h2>
-
-          <p
-            style="
-              white-space:pre-wrap;
-              line-height:1.6;
-            "
-          >
-            ${safe.description}
-          </p>
-
-          ${photoSummary}
-
-          <hr
-            style="
-              border:none;
-              border-top:1px solid #dce7dc;
-              margin:28px 0;
-            "
-          />
-
-          <p
-            style="
-              font-size:13px;
-              color:#667085;
-            "
-          >
-            Reply to this email to respond directly to
-            ${safe.name}.
-          </p>
-        </div>
-      `,
-    });
+        `,
+      });
 
     /*
      * The business must receive the enquiry.
@@ -529,127 +664,129 @@ export async function onRequestPost(context) {
      * EMAIL 2
      * Customer confirmation
      */
-    const customerEmail = await resend.emails.send({
-      from:
-        "EcoSurfaceCare <quotes@notifications.ecosurfacecare.co.uk>",
+    const customerEmail =
+      await resend.emails.send({
+        from:
+          "EcoSurfaceCare <quotes@notifications.ecosurfacecare.co.uk>",
 
-      to: [email],
+        to: [email],
 
-      replyTo: "contact@ecosurfacecare.co.uk",
+        replyTo:
+          "contact@ecosurfacecare.co.uk",
 
-      subject:
-        `We received your EcoSurfaceCare quote request — ${reference}`,
+        subject:
+          `We received your EcoSurfaceCare quote request — ${reference}`,
 
-      html: `
-        <div
-          style="
-            font-family:Arial,sans-serif;
-            max-width:680px;
-            margin:0 auto;
-            color:#173b1a;
-          "
-        >
-          <h1 style="color:#228b22;">
-            Thank you, ${safe.name}
-          </h1>
-
-          <p
-            style="
-              font-size:16px;
-              line-height:1.7;
-            "
-          >
-            We've received your EcoSurfaceCare quote request
-            and will review the information you provided.
-          </p>
-
+        html: `
           <div
             style="
-              background:#f5faf3;
-              border:1px solid #dce7dc;
-              border-radius:16px;
-              padding:20px;
-              margin:24px 0;
+              font-family:Arial,sans-serif;
+              max-width:680px;
+              margin:0 auto;
+              color:#173b1a;
             "
           >
+            <h1 style="color:#228b22;">
+              Thank you, ${safe.name}
+            </h1>
+
             <p
               style="
-                margin:0;
-                font-size:14px;
-                color:#667085;
+                font-size:16px;
+                line-height:1.7;
               "
             >
-              Your reference
+              We've received your EcoSurfaceCare quote request
+              and will review the information you provided.
+            </p>
+
+            <div
+              style="
+                background:#f5faf3;
+                border:1px solid #dce7dc;
+                border-radius:16px;
+                padding:20px;
+                margin:24px 0;
+              "
+            >
+              <p
+                style="
+                  margin:0;
+                  font-size:14px;
+                  color:#667085;
+                "
+              >
+                Your reference
+              </p>
+
+              <p
+                style="
+                  margin:6px 0 0;
+                  font-size:24px;
+                  font-weight:bold;
+                  color:#228b22;
+                "
+              >
+                ${safe.reference}
+              </p>
+            </div>
+
+            ${
+              uploadedPhotos.length > 0
+                ? `
+                  <p
+                    style="
+                      font-size:16px;
+                      line-height:1.7;
+                    "
+                  >
+                    We also received
+                    ${uploadedPhotos.length}
+                    photo${
+                      uploadedPhotos.length === 1
+                        ? ""
+                        : "s"
+                    }
+                    with your request.
+                  </p>
+                `
+                : ""
+            }
+
+            <p
+              style="
+                font-size:16px;
+                line-height:1.7;
+              "
+            >
+              Please keep this reference in case you need
+              to contact us about your enquiry.
             </p>
 
             <p
               style="
-                margin:6px 0 0;
-                font-size:24px;
-                font-weight:bold;
-                color:#228b22;
+                font-size:16px;
+                line-height:1.7;
               "
             >
-              ${safe.reference}
+              If you need to add anything else, simply
+              reply to this email.
+            </p>
+
+            <p style="margin-top:32px;">
+              EcoSurfaceCare
+              <br />
+              Professional Cleaning, Restoration &amp; Maintenance
+            </p>
+
+            <p style="font-size:14px;">
+              07873 945808
+              <br />
+              contact@ecosurfacecare.co.uk
             </p>
           </div>
-
-          ${
-            uploadedPhotos.length > 0
-              ? `
-                <p
-                  style="
-                    font-size:16px;
-                    line-height:1.7;
-                  "
-                >
-                  We also received
-                  ${uploadedPhotos.length}
-                  photo${
-                    uploadedPhotos.length === 1
-                      ? ""
-                      : "s"
-                  }
-                  with your request.
-                </p>
-              `
-              : ""
-          }
-
-          <p
-            style="
-              font-size:16px;
-              line-height:1.7;
-            "
-          >
-            Please keep this reference in case you need
-            to contact us about your enquiry.
-          </p>
-
-          <p
-            style="
-              font-size:16px;
-              line-height:1.7;
-            "
-          >
-            If you need to add anything else, simply
-            reply to this email.
-          </p>
-
-          <p style="margin-top:32px;">
-            EcoSurfaceCare
-            <br />
-            Professional Cleaning, Restoration &amp; Maintenance
-          </p>
-
-          <p style="font-size:14px;">
-            07873 945808
-            <br />
-            contact@ecosurfacecare.co.uk
-          </p>
-        </div>
-      `,
-    });
+        `,
+      });
 
     /*
      * Don't fail the quote if only the customer
@@ -675,7 +812,9 @@ export async function onRequestPost(context) {
         postcode,
         propertyType,
         service,
-        photoCount: uploadedPhotos.length,
+        photoCount:
+          uploadedPhotos.length,
+        databaseStored: true,
         turnstileVerified: true,
       },
     );
@@ -688,7 +827,8 @@ export async function onRequestPost(context) {
 
       reference,
 
-      photoCount: uploadedPhotos.length,
+      photoCount:
+        uploadedPhotos.length,
 
       message:
         uploadedPhotos.length > 0

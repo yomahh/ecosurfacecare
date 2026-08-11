@@ -1,13 +1,19 @@
 {
-  "name": "ecosurfacecare",
-  "compatibility_date": "2026-08-08",
-  "pages_build_output_dir": "./dist",
-
-  "r2_buckets": [
-    {
-      "binding": "QUOTE_IMAGES",
-      "bucket_name": "ecosurfacecare-quotes",
-      "remote": true
-    }
-  ]
+	"name": "ecosurfacecare",
+	"compatibility_date": "2026-08-08",
+	"pages_build_output_dir": "./dist",
+	"r2_buckets": [
+		{
+			"binding": "QUOTE_IMAGES",
+			"bucket_name": "ecosurfacecare-quotes",
+			"remote": true
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "ecosurfacecare_db",
+			"database_name": "ecosurfacecare-db",
+			"database_id": "4b520ee9-7290-4c54-b4f7-a8634adc723f"
+		}
+	]
 }

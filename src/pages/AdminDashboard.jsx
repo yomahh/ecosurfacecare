@@ -890,6 +890,36 @@ export default function AdminDashboard() {
     };
   }, [quotes]);
 
+  const upcomingJobsList = useMemo(() => {
+    const now = new Date();
+
+    return quotes
+      .filter((quote) => {
+        if (
+          !quote.appointment_at ||
+          quote.status === "cancelled" ||
+          quote.status === "completed"
+        ) {
+          return false;
+        }
+
+        const appointment = new Date(
+          quote.appointment_at,
+        );
+
+        return (
+          !Number.isNaN(appointment.getTime()) &&
+          appointment >= now
+        );
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.appointment_at) -
+          new Date(b.appointment_at),
+      )
+      .slice(0, 5);
+  }, [quotes]);
+
   if (selectedQuote) {
     const quote = selectedQuote;
 
@@ -1695,6 +1725,111 @@ export default function AdminDashboard() {
             </p>
           </article>
         </div>
+
+        {/* UPCOMING JOBS */}
+        <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-3 border-b border-slate-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-amber-50 text-amber-700">
+                <CalendarClock size={21} />
+              </span>
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Upcoming jobs
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Your next scheduled visits and jobs.
+                </p>
+              </div>
+            </div>
+
+            {upcomingJobsList.length > 0 && (
+              <span className="self-start rounded-full bg-amber-50 px-3 py-1 text-sm font-bold text-amber-700 sm:self-auto">
+                {upcomingJobsList.length} shown
+              </span>
+            )}
+          </div>
+
+          {upcomingJobsList.length === 0 ? (
+            <div className="p-8 text-center">
+              <CalendarClock
+                size={34}
+                className="mx-auto text-slate-300"
+              />
+
+              <h3 className="mt-4 text-lg font-bold text-slate-900">
+                No upcoming jobs
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Future appointments will appear here automatically.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-200">
+              {upcomingJobsList.map((quote) => (
+                <button
+                  key={quote.id}
+                  type="button"
+                  onClick={() => openQuote(quote)}
+                  className="grid w-full gap-4 p-5 text-left transition hover:bg-amber-50/50 md:grid-cols-[1.15fr_.95fr_.85fr_.8fr_auto] md:items-center md:px-6"
+                >
+                  <div>
+                    <p className="font-bold text-slate-900">
+                      {quote.name}
+                    </p>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <StatusBadge status={quote.status} />
+                      <span className="text-xs font-semibold text-[#176B1C]">
+                        {quote.reference}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {serviceLabels[quote.service] ||
+                        friendlyValue(quote.service)}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {quote.postcode}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      Appointment
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-slate-800">
+                      {formatAppointmentShort(
+                        quote.appointment_at,
+                      )}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      Quote
+                    </p>
+                    <p className="mt-1 font-bold text-[#176B1C]">
+                      {formatMoney(
+                        quote.quoted_amount_pence,
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="md:text-right">
+                    <p className="text-sm font-bold text-[#176B1C]">
+                      Open job →
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* ENQUIRIES */}
         <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">

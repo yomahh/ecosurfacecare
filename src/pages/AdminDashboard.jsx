@@ -13,7 +13,9 @@ import {
   LogOut,
   Mail,
   MapPin,
+  MessageSquareText,
   Phone,
+  Plus,
   RefreshCw,
   Search,
   UserRound,
@@ -146,6 +148,21 @@ export default function AdminDashboard() {
   const [statusSaving, setStatusSaving] =
     useState(false);
 
+  const [notes, setNotes] =
+    useState([]);
+
+  const [notesLoading, setNotesLoading] =
+    useState(false);
+
+  const [notesError, setNotesError] =
+    useState("");
+
+  const [newNote, setNewNote] =
+    useState("");
+
+  const [noteSaving, setNoteSaving] =
+    useState(false);
+
   async function loadQuotes() {
     try {
       setLoading(true);
@@ -218,7 +235,8 @@ export default function AdminDashboard() {
         );
       }
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (!data.success) {
         throw new Error(
@@ -233,6 +251,109 @@ export default function AdminDashboard() {
       setPhotos([]);
     } finally {
       setPhotosLoading(false);
+    }
+  }
+
+  async function loadNotes(reference) {
+    try {
+      setNotesLoading(true);
+      setNotesError("");
+      setNotes([]);
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}/notes`,
+        {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to load notes.",
+        );
+      }
+
+      setNotes(data.notes || []);
+    } catch (err) {
+      console.error(err);
+
+      setNotesError(
+        "We couldn't load the internal notes.",
+      );
+
+      setNotes([]);
+    } finally {
+      setNotesLoading(false);
+    }
+  }
+
+  async function saveNote(reference) {
+    const note = newNote.trim();
+
+    if (!note || noteSaving) {
+      return;
+    }
+
+    try {
+      setNoteSaving(true);
+      setNotesError("");
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}/notes`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            note,
+          }),
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to save note.",
+        );
+      }
+
+      setNewNote("");
+
+      await loadNotes(reference);
+    } catch (err) {
+      console.error(err);
+
+      setNotesError(
+        err.message ||
+          "The note could not be saved.",
+      );
+    } finally {
+      setNoteSaving(false);
     }
   }
 
@@ -302,6 +423,26 @@ export default function AdminDashboard() {
     } finally {
       setStatusSaving(false);
     }
+  }
+
+  function openQuote(quote) {
+    setSelectedQuote(quote);
+
+    setNewNote("");
+    setNotes([]);
+    setNotesError("");
+
+    loadPhotos(quote.reference);
+    loadNotes(quote.reference);
+  }
+
+  function closeQuote() {
+    setSelectedQuote(null);
+
+    setPhotos([]);
+    setNotes([]);
+    setNewNote("");
+    setNotesError("");
   }
 
   useEffect(() => {
@@ -410,10 +551,7 @@ export default function AdminDashboard() {
         <main className="container-site py-8 md:py-10">
           <button
             type="button"
-            onClick={() => {
-              setSelectedQuote(null);
-              setPhotos([]);
-            }}
+            onClick={closeQuote}
             className="inline-flex items-center gap-2 font-bold text-[#176B1C]"
           >
             <ArrowLeft size={18} />
@@ -678,6 +816,165 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
+
+            <div className="border-t border-slate-200 p-6 md:p-8">
+              <div className="flex items-start gap-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-[#176B1C]">
+                  <MessageSquareText
+                    size={21}
+                  />
+                </span>
+
+                <div>
+                  <h3 className="text-lg font-bold">
+                    Internal notes
+                  </h3>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Private notes for this enquiry.
+                    Customers cannot see these.
+                  </p>
+                </div>
+              </div>
+
+              <form
+                className="mt-6"
+                onSubmit={(event) => {
+                  event.preventDefault();
+
+                  saveNote(
+                    quote.reference,
+                  );
+                }}
+              >
+                <label
+                  htmlFor="internal-note"
+                  className="text-sm font-bold text-slate-700"
+                >
+                  Add a note
+                </label>
+
+                <textarea
+                  id="internal-note"
+                  rows={4}
+                  maxLength={5000}
+                  value={newNote}
+                  onChange={(event) =>
+                    setNewNote(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="For example: Called customer, discussed grout recolouring and waiting for preferred appointment date."
+                  className="mt-2 w-full resize-y rounded-2xl border border-slate-300 bg-white px-4 py-3 leading-7 outline-none transition focus:border-[#176B1C] focus:ring-4 focus:ring-emerald-100"
+                />
+
+                <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs text-slate-500">
+                    {newNote.length.toLocaleString(
+                      "en-GB",
+                    )}
+                    /5,000 characters
+                  </p>
+
+                  <button
+                    type="submit"
+                    disabled={
+                      noteSaving ||
+                      !newNote.trim()
+                    }
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#176B1C] px-5 font-bold text-white transition hover:bg-[#0f5515] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {noteSaving ? (
+                      <RefreshCw
+                        size={17}
+                        className="animate-spin"
+                      />
+                    ) : (
+                      <Plus size={18} />
+                    )}
+
+                    {noteSaving
+                      ? "Saving..."
+                      : "Add note"}
+                  </button>
+                </div>
+              </form>
+
+              {notesError && (
+                <div
+                  role="alert"
+                  className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700"
+                >
+                  {notesError}
+                </div>
+              )}
+
+              <div className="mt-8">
+                <div className="flex items-center justify-between gap-4">
+                  <h4 className="font-bold text-slate-900">
+                    Activity
+                  </h4>
+
+                  {notes.length > 0 && (
+                    <span className="text-sm text-slate-500">
+                      {notes.length}{" "}
+                      {notes.length === 1
+                        ? "note"
+                        : "notes"}
+                    </span>
+                  )}
+                </div>
+
+                {notesLoading ? (
+                  <div className="mt-5 flex items-center gap-3 rounded-2xl bg-slate-50 p-5 text-slate-500">
+                    <RefreshCw
+                      size={18}
+                      className="animate-spin"
+                    />
+
+                    Loading notes...
+                  </div>
+                ) : notes.length === 0 ? (
+                  <div className="mt-5 rounded-2xl bg-slate-50 p-6">
+                    <p className="font-semibold text-slate-700">
+                      No internal notes yet.
+                    </p>
+
+                    <p className="mt-1 text-sm text-slate-500">
+                      Add the first note above when you contact the customer or update the enquiry.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-5 grid gap-4">
+                    {notes.map(
+                      (note) => (
+                        <article
+                          key={note.id}
+                          className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        >
+                          <p className="whitespace-pre-wrap leading-7 text-slate-700">
+                            {note.note}
+                          </p>
+
+                          <div className="mt-4 flex flex-col gap-1 border-t border-slate-200 pt-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+                            <span>
+                              {note.author_email ||
+                                "EcoSurfaceCare owner"}
+                            </span>
+
+                            <time>
+                              {formatDate(
+                                note.created_at,
+                              )}
+                            </time>
+                          </div>
+                        </article>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </section>
         </main>
       </div>
@@ -922,15 +1219,9 @@ export default function AdminDashboard() {
                   <button
                     key={quote.id}
                     type="button"
-                    onClick={() => {
-                      setSelectedQuote(
-                        quote,
-                      );
-
-                      loadPhotos(
-                        quote.reference,
-                      );
-                    }}
+                    onClick={() =>
+                      openQuote(quote)
+                    }
                     className="grid w-full gap-4 p-5 text-left transition hover:bg-slate-50 md:grid-cols-[1.25fr_.9fr_.8fr_auto] md:items-center md:px-6"
                   >
                     <div>

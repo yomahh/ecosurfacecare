@@ -826,69 +826,61 @@ export default function AdminDashboard() {
     ],
   );
 
-  const stats = useMemo(() => {
-    const total = quotes.length;
+const stats = useMemo(() => {
+  const total = quotes.length;
 
-    const newCount =
-      quotes.filter(
+  const newCount =
+    quotes.filter(
+      (quote) =>
+        quote.status === "new",
+    ).length;
+
+  const bookedValuePence =
+    quotes
+      .filter(
         (quote) =>
-          quote.status === "new",
-      ).length;
+          quote.status === "booked" &&
+          quote.quoted_amount_pence !==
+            null &&
+          quote.quoted_amount_pence !==
+            undefined,
+      )
+      .reduce(
+        (sum, quote) =>
+          sum +
+          Number(
+            quote.quoted_amount_pence,
+          ),
+        0,
+      );
 
-    const quotedValuePence =
-      quotes
-        .filter(
-          (quote) =>
-            quote.status !==
-              "cancelled" &&
-            quote.quoted_amount_pence !==
-              null &&
-            quote.quoted_amount_pence !==
-              undefined,
-        )
-        .reduce(
-          (sum, quote) =>
-            sum +
-            Number(
-              quote.quoted_amount_pence,
-            ),
-          0,
-        );
-
-    const now = new Date();
-
-    const upcomingJobs =
-      quotes.filter((quote) => {
-        if (
-          !quote.appointment_at ||
+  const completedRevenuePence =
+    quotes
+      .filter(
+        (quote) =>
           quote.status ===
-            "cancelled" ||
-          quote.status ===
-            "completed"
-        ) {
-          return false;
-        }
+            "completed" &&
+          quote.quoted_amount_pence !==
+            null &&
+          quote.quoted_amount_pence !==
+            undefined,
+      )
+      .reduce(
+        (sum, quote) =>
+          sum +
+          Number(
+            quote.quoted_amount_pence,
+          ),
+        0,
+      );
 
-        const appointment =
-          new Date(
-            quote.appointment_at,
-          );
-
-        return (
-          !Number.isNaN(
-            appointment.getTime(),
-          ) &&
-          appointment >= now
-        );
-      }).length;
-
-    return {
-      total,
-      newCount,
-      quotedValuePence,
-      upcomingJobs,
-    };
-  }, [quotes]);
+  return {
+    total,
+    newCount,
+    bookedValuePence,
+    completedRevenuePence,
+  };
+}, [quotes]);
 
   const upcomingJobsList = useMemo(() => {
     const now = new Date();
@@ -1674,6 +1666,7 @@ export default function AdminDashboard() {
 
       <main className="container-site py-8 md:py-10">
         {/* DASHBOARD METRICS */}
+        {/* DASHBOARD METRICS */}
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <ClipboardList className="text-[#176B1C]" />
@@ -1700,28 +1693,30 @@ export default function AdminDashboard() {
           </article>
 
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <Banknote className="text-violet-600" />
+            <Banknote className="text-emerald-600" />
 
             <p className="mt-5 text-3xl font-bold">
               {formatMoney(
-                stats.quotedValuePence,
+                stats.bookedValuePence,
               )}
             </p>
 
             <p className="mt-1 text-slate-500">
-              Total quoted value
+              Booked value
             </p>
           </article>
 
           <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <CalendarClock className="text-amber-600" />
+            <CheckCircle2 className="text-green-600" />
 
             <p className="mt-5 text-3xl font-bold">
-              {stats.upcomingJobs}
+              {formatMoney(
+                stats.completedRevenuePence,
+              )}
             </p>
 
             <p className="mt-1 text-slate-500">
-              Upcoming jobs
+              Completed revenue
             </p>
           </article>
         </div>

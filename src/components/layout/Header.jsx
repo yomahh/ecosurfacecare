@@ -136,6 +136,7 @@ export default function Header() {
           menuOpen ? "translate-x-0" : "translate-x-full",
         ].join(" ")}
         aria-hidden={!menuOpen}
+        inert={!menuOpen ? "" : undefined}
       >
         <nav className="flex flex-col" aria-label="Mobile navigation">
           {navigation.map(({ to, label, end }) => (

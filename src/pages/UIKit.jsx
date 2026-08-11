@@ -169,7 +169,7 @@ export default function UIKit() {
         >
           <div className="grid gap-6 md:grid-cols-3">
             <SurfaceCard interactive>
-              <Sparkles className="text-[#228B22]" />
+              <Sparkles className="text-[#176B1C]" />
               <h3 className="mt-5 text-xl font-bold text-[#17352f]">
                 Grout recolouring
               </h3>
@@ -180,7 +180,7 @@ export default function UIKit() {
             </SurfaceCard>
 
             <SurfaceCard interactive>
-              <ShieldCheck className="text-[#228B22]" />
+              <ShieldCheck className="text-[#176B1C]" />
               <h3 className="mt-5 text-xl font-bold text-[#17352f]">
                 Surface restoration
               </h3>
@@ -190,7 +190,7 @@ export default function UIKit() {
             </SurfaceCard>
 
             <SurfaceCard interactive>
-              <Leaf className="text-[#228B22]" />
+              <Leaf className="text-[#176B1C]" />
               <h3 className="mt-5 text-xl font-bold text-[#17352f]">
                 Responsible care
               </h3>

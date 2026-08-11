@@ -51,8 +51,8 @@ export default function Header() {
       "after:origin-left after:rounded-full after:bg-[#228B22]",
       "after:transition-transform after:duration-200",
       isActive
-        ? "text-[#228B22] after:scale-x-100"
-        : "text-slate-700 after:scale-x-0 hover:text-[#228B22] hover:after:scale-x-100",
+        ? "text-[#176B1C] after:scale-x-100"
+        : "text-slate-700 after:scale-x-0 hover:text-[#176B1C] hover:after:scale-x-100",
     ].join(" ");
 
   return (
@@ -155,7 +155,7 @@ export default function Header() {
                 [
                   "border-b border-slate-100 py-5 text-xl font-bold transition-colors",
                   isActive
-                    ? "text-[#228B22]"
+                    ? "text-[#176B1C]"
                     : "text-heading hover:text-brand",
                 ].join(" ")
               }

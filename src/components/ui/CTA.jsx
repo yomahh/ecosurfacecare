@@ -41,7 +41,7 @@ export default function CTA() {
         <div className="overflow-hidden rounded-[2.25rem] bg-[#228B22] shadow-[0_28px_80px_rgba(23,53,47,0.18)]">
           <div className="grid gap-10 p-8 md:p-12 lg:grid-cols-[1fr_.9fr] lg:p-14">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-100">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-white">
                 Request a free quote
               </p>
 
@@ -60,7 +60,7 @@ export default function CTA() {
                 variant="secondary"
                 size="large"
                 icon={<ArrowRight size={19} />}
-                className="mt-8 border-white bg-white text-[#228B22] hover:bg-emerald-50"
+                className="mt-8 border-white bg-white text-[#176B1C] hover:bg-emerald-50"
               >
                 Start your quote
               </Button>
@@ -72,18 +72,18 @@ export default function CTA() {
                   key={title}
                   className="flex gap-4 rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur"
                 >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-[#228B22]">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-[#176B1C]">
                     <Icon size={21} />
                   </span>
 
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-200">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-50">
                       Step {index + 1}
                     </p>
 
                     <h3 className="mt-1 font-bold text-white">{title}</h3>
 
-                    <p className="mt-1 text-sm leading-6 text-emerald-50/70">
+                    <p className="mt-1 text-sm leading-6 text-emerald-50">
                       {text}
                     </p>
                   </div>

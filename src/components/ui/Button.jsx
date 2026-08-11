@@ -4,9 +4,9 @@ const variants = {
   primary:
     "bg-[#228B22] text-white border-[#228B22] hover:bg-[#08584e] hover:border-[#08584e]",
   secondary:
-    "bg-white text-[#228B22] border-[#228B22] hover:bg-emerald-50",
+    "bg-white text-[#176B1C] border-[#228B22] hover:bg-emerald-50",
   ghost:
-    "bg-transparent text-[#228B22] border-transparent hover:bg-emerald-50",
+    "bg-transparent text-[#176B1C] border-transparent hover:bg-emerald-50",
   dark:
     "bg-forest text-white border-[var(--color-forest)] hover:bg-forest-deep",
   danger:

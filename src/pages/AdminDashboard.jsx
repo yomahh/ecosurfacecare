@@ -7,10 +7,10 @@ export default function AdminDashboard() {
   const [items, setItems] = useState(galleryItems);
   return (
     <div className="min-h-screen bg-slate-100">
-      <header className="border-b bg-white"><div className="container-site flex h-20 items-center justify-between"><div><p className="text-sm text-slate-500">EcoSurfaceCare</p><h1 className="text-xl font-bold">Gallery dashboard</h1></div><Link to="/" className="flex items-center gap-2 font-semibold text-[#228B22]"><LogOut size={18}/>Exit</Link></div></header>
+      <header className="border-b bg-white"><div className="container-site flex h-20 items-center justify-between"><div><p className="text-sm text-slate-500">EcoSurfaceCare</p><h1 className="text-xl font-bold">Gallery dashboard</h1></div><Link to="/" className="flex items-center gap-2 font-semibold text-[#176B1C]"><LogOut size={18}/>Exit</Link></div></header>
       <main className="container-site py-10">
         <div className="grid gap-5 md:grid-cols-3">
-          {[[Images,"Published photos",items.length],[Video,"Videos",0],[ImagePlus,"Draft items",0]].map(([Icon,label,value])=><div key={label} className="rounded-3xl bg-white p-6 shadow-sm"><Icon className="text-[#228B22]"/><p className="mt-5 text-3xl font-bold">{value}</p><p className="text-slate-500">{label}</p></div>)}
+          {[[Images,"Published photos",items.length],[Video,"Videos",0],[ImagePlus,"Draft items",0]].map(([Icon,label,value])=><div key={label} className="rounded-3xl bg-white p-6 shadow-sm"><Icon className="text-[#176B1C]"/><p className="mt-5 text-3xl font-bold">{value}</p><p className="text-slate-500">{label}</p></div>)}
         </div>
         <section className="mt-8 rounded-3xl bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-2xl font-bold">Gallery items</h2><p className="text-slate-500">Add, edit, publish or remove project media.</p></div><button className="rounded-full bg-[#228B22] px-5 py-3 font-bold text-white">+ Add new project</button></div>

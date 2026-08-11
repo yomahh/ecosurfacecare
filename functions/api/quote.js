@@ -374,20 +374,16 @@ export async function onRequestPost(context) {
         .prepare(
           `
             INSERT INTO quotes (
-              reference,
-              name,
-              email,
-              phone,
-              postcode,
-              property_type,
-              service,
-              description,
-              photo_count,
-              status,
-              quoted_amount_pence,
-              appointment_at,
-              created_at,
-              updated_at
+      reference,
+      name,
+      email,
+      phone,
+      postcode,
+      property_type,
+      service,
+      description,
+      photo_count,
+      status
             )
             VALUES (
               ?,

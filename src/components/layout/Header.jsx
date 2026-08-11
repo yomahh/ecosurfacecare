@@ -73,15 +73,15 @@ export default function Header() {
         >
           <NavLink to="/" aria-label="EcoSurfaceCare home">
             <img
-              src="/images/branding/ecosurfacecare-logo-header.webp"
-              alt="EcoSurfaceCare"
-              width="400"
-              height="267"
-              className={[
-                "w-auto object-contain transition-all duration-300",
-                scrolled ? "h-16 max-w-[260px]" : "h-20 max-w-[300px]",
-              ].join(" ")}
-            />
+  src="/images/branding/ecosurfacecare-logo-header.webp"
+  alt="EcoSurfaceCare"
+  width="400"
+  height="266"
+  className={[
+    "w-auto object-contain transition-all duration-300",
+    scrolled ? "h-16 max-w-[260px]" : "h-20 max-w-[300px]",
+  ].join(" ")}
+/>
           </NavLink>
 
           <nav

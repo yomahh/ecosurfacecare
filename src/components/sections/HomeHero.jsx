@@ -47,10 +47,12 @@ export default function HomeHero() {
 
             <div className="mt-4 flex items-center gap-8 sm:gap-10">
               <img
-                src="/images/partners/groutgleam-logo.webp"
-                alt="GroutGleam authorised partner"
-                className="h-20 w-auto object-contain sm:h-24"
-              />
+  src="/images/partners/groutgleam-logo.webp"
+  alt="GroutGleam"
+  width="400"
+  height="328"
+  className="h-20 w-auto object-contain sm:h-24"
+/>
 
               <div
                 className="h-10 w-px bg-[var(--color-border)]"
@@ -58,10 +60,12 @@ export default function HomeHero() {
               />
 
               <img
-                src="/images/partners/biosteam-logo.webp"
-                alt="BioSteam authorised partner"
-                className="h-14 w-auto object-contain sm:h-16"
-              />
+  src="/images/partners/biosteam-logo.webp"
+  alt="BioSteam"
+  width="500"
+  height="156"
+  className="h-14 w-auto object-contain sm:h-16"
+/>
             </div>
           </div>
         </div>

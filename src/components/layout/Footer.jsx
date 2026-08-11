@@ -35,10 +35,12 @@ export default function Footer() {
             aria-label="EcoSurfaceCare homepage"
           >
             <img
-              src="/images/branding/ecosurfacecare-logo-header.webp"
-              alt="EcoSurfaceCare"
-              className="h-16 w-auto max-w-[250px] object-contain"
-            />
+  src="/images/branding/ecosurfacecare-logo-header.webp"
+  alt="EcoSurfaceCare"
+  width="400"
+  height="266"
+  className="h-16 w-auto max-w-[250px] object-contain"
+/>
           </Link>
 
           <p className="mt-6 max-w-md leading-7 text-slate-300">
@@ -136,7 +138,7 @@ export default function Footer() {
 
           <Link
             to="/contact"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-emerald-200 transition hover:text-white"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-emerald-50 transition hover:text-white"
           >
             Contact EcoSurfaceCare
             <ArrowUpRight size={17} />

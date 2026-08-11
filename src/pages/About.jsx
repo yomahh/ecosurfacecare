@@ -44,6 +44,8 @@ export default function About() {
                 <img
                   src="/images/partners/groutgleam-logo.webp"
                   alt="GroutGleam authorised partner"
+                  width="400"
+                  height="328"
                   className="h-20 w-auto object-contain sm:h-24"
                 />
 
@@ -55,6 +57,8 @@ export default function About() {
                 <img
                   src="/images/partners/biosteam-logo.webp"
                   alt="BioSteam authorised partner"
+                  width="500"
+                  height="156"
                   className="h-14 w-auto object-contain sm:h-16"
                 />
               </div>

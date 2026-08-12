@@ -21,6 +21,7 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Trash2,
   UserRound,
 } from "lucide-react";
 
@@ -232,6 +233,9 @@ export default function AdminDashboard() {
     useState(false);
 
   const [statusSaving, setStatusSaving] =
+    useState(false);
+
+  const [deleteSaving, setDeleteSaving] =
     useState(false);
 
   const [notes, setNotes] =
@@ -735,6 +739,72 @@ export default function AdminDashboard() {
     }
   }
 
+  async function deleteEnquiry(
+    reference,
+  ) {
+    if (deleteSaving) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `Delete enquiry ${reference}?\n\nThis permanently removes the enquiry, its internal notes and its private customer-uploaded quote photos. Linked gallery projects will remain.`,
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeleteSaving(true);
+
+      const response = await fetch(
+        `/api/admin/quotes/${encodeURIComponent(
+          reference,
+        )}/delete`,
+        {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to delete enquiry.",
+        );
+      }
+
+      setQuotes((current) =>
+        current.filter(
+          (quote) =>
+            quote.reference !==
+            reference,
+        ),
+      );
+
+      closeQuote();
+    } catch (err) {
+      console.error(err);
+
+      window.alert(
+        err.message ||
+          "The enquiry could not be deleted.",
+      );
+    } finally {
+      setDeleteSaving(false);
+    }
+  }
+
   function openQuote(quote) {
     setSelectedQuote(quote);
 
@@ -827,7 +897,7 @@ export default function AdminDashboard() {
     ],
   );
 
-const stats = useMemo(() => {
+  const stats = useMemo(() => {
   const total = quotes.length;
 
   const newCount =
@@ -881,7 +951,7 @@ const stats = useMemo(() => {
     bookedValuePence,
     completedRevenuePence,
   };
-}, [quotes]);
+  }, [quotes]);
 
   const upcomingJobsList = useMemo(() => {
     const now = new Date();
@@ -948,7 +1018,7 @@ const stats = useMemo(() => {
     return (
       <div className="min-h-screen bg-slate-100">
         <header className="border-b border-slate-200 bg-white">
-         className="container-site flex min-h-20 items-center justify-between gap-4 py-4"
+          <div className="container-site flex min-h-20 items-center justify-between gap-4 py-4">
             <div>
               <p className="text-sm font-semibold text-slate-500">
                 EcoSurfaceCare
@@ -975,6 +1045,7 @@ const stats = useMemo(() => {
                 Sign out
               </a>
             </div>
+          </div>
         </header>
 
         <main className="container-site py-8 md:py-10">
@@ -1047,12 +1118,38 @@ const stats = useMemo(() => {
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-[#176B1C]">
-                  {quote.photo_count}{" "}
-                  photo
-                  {quote.photo_count === 1
-                    ? ""
-                    : "s"}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-[#176B1C]">
+                    {quote.photo_count}{" "}
+                    photo
+                    {quote.photo_count === 1
+                      ? ""
+                      : "s"}
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={deleteSaving}
+                    onClick={() =>
+                      deleteEnquiry(
+                        quote.reference,
+                      )
+                    }
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 font-bold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {deleteSaving ? (
+                      <RefreshCw
+                        size={17}
+                        className="animate-spin"
+                      />
+                    ) : (
+                      <Trash2 size={17} />
+                    )}
+
+                    {deleteSaving
+                      ? "Deleting..."
+                      : "Delete enquiry"}
+                  </button>
                 </div>
               </div>
             </div>

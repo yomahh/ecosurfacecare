@@ -88,6 +88,11 @@ export default function AdminGallery() {
   const [saving, setSaving] =
     useState(false);
 
+  const [
+    deletingProject,
+    setDeletingProject,
+  ] = useState(false);
+
   const [uploading, setUploading] =
     useState(false);
 
@@ -408,6 +413,70 @@ export default function AdminGallery() {
     }
   }
 
+  async function deleteProject() {
+    if (
+      !selected ||
+      deletingProject
+    ) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `Delete gallery project "${selected.title}"?\n\nThis permanently removes the project and all of its gallery images/videos from storage. This cannot be undone.`,
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingProject(true);
+      setMessage("");
+
+      const response = await fetch(
+        `/api/admin/gallery/${selected.id}/delete`,
+        {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data.message ||
+            "Unable to delete gallery project.",
+        );
+      }
+
+      setSelected(null);
+
+      await loadProjects();
+
+      window.alert(
+        "Gallery project deleted.",
+      );
+    } catch (err) {
+      console.error(err);
+
+      setMessage(
+        err.message ||
+          "Unable to delete gallery project.",
+      );
+    } finally {
+      setDeletingProject(false);
+    }
+  }
+
   async function uploadMedia(
     event,
   ) {
@@ -609,19 +678,49 @@ export default function AdminGallery() {
                 </p>
               </div>
 
-              <button
-                type="button"
-                disabled={saving}
-                onClick={
-                  togglePublish
-                }
-                className="rounded-full bg-[#176B1C] px-5 py-3 font-bold text-white disabled:opacity-50"
-              >
-                {selected.status ===
-                "published"
-                  ? "Unpublish"
-                  : "Publish"}
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  disabled={
+                    saving ||
+                    deletingProject
+                  }
+                  onClick={
+                    togglePublish
+                  }
+                  className="rounded-full bg-[#176B1C] px-5 py-3 font-bold text-white disabled:opacity-50"
+                >
+                  {selected.status ===
+                  "published"
+                    ? "Unpublish"
+                    : "Publish"}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={
+                    deletingProject ||
+                    saving
+                  }
+                  onClick={
+                    deleteProject
+                  }
+                  className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-5 py-3 font-bold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {deletingProject ? (
+                    <RefreshCw
+                      size={17}
+                      className="animate-spin"
+                    />
+                  ) : (
+                    <Trash2 size={17} />
+                  )}
+
+                  {deletingProject
+                    ? "Deleting..."
+                    : "Delete project"}
+                </button>
+              </div>
             </div>
 
             {message && (

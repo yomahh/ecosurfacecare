@@ -3,6 +3,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowLeft,
   Banknote,
@@ -947,7 +948,7 @@ const stats = useMemo(() => {
     return (
       <div className="min-h-screen bg-slate-100">
         <header className="border-b border-slate-200 bg-white">
-          <div className="container-site flex min-h-20 items-center justify-between gap-4 py-4">
+         className="container-site flex min-h-20 items-center justify-between gap-4 py-4"
             <div>
               <p className="text-sm font-semibold text-slate-500">
                 EcoSurfaceCare
@@ -958,14 +959,22 @@ const stats = useMemo(() => {
               </h1>
             </div>
 
-            <a
-              href="/cdn-cgi/access/logout"
-              className="inline-flex items-center gap-2 font-semibold text-[#176B1C]"
-            >
-              <LogOut size={18} />
-              Sign out
-            </a>
-          </div>
+            <div className="flex items-center gap-4">
+              <Link
+                to="/admin/gallery"
+                className="font-semibold text-[#176B1C]"
+              >
+                Gallery
+              </Link>
+
+              <a
+                href="/cdn-cgi/access/logout"
+                className="inline-flex items-center gap-2 font-semibold text-[#176B1C]"
+              >
+                <LogOut size={18} />
+                Sign out
+              </a>
+            </div>
         </header>
 
         <main className="container-site py-8 md:py-10">
@@ -1678,13 +1687,22 @@ const stats = useMemo(() => {
             )}
           </div>
 
-          <a
-            href="/cdn-cgi/access/logout"
-            className="inline-flex items-center gap-2 font-semibold text-[#176B1C]"
-          >
-            <LogOut size={18} />
-            Sign out
-          </a>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/admin/gallery"
+              className="font-semibold text-[#176B1C]"
+            >
+              Gallery
+            </Link>
+
+            <a
+              href="/cdn-cgi/access/logout"
+              className="inline-flex items-center gap-2 font-semibold text-[#176B1C]"
+            >
+              <LogOut size={18} />
+              Sign out
+            </a>
+          </div>
         </div>
       </header>
 

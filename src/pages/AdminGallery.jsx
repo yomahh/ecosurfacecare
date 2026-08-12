@@ -845,12 +845,28 @@ export default function AdminGallery() {
                         key={media.id}
                         className="rounded-2xl border border-slate-200 bg-white p-4"
                       >
-                        <div className="grid aspect-[4/3] place-items-center rounded-xl bg-slate-100 text-slate-500">
-                          {media.media_type ===
-                          "video"
-                            ? "Video"
-                            : "Image"}
-                        </div>
+                        {media.media_type === "video" ? (
+                          <video
+                            src={`/api/admin/gallery/${selected.id}/media/${media.id}/file`}
+                            controls
+                            preload="metadata"
+                            className="aspect-[4/3] w-full rounded-xl bg-slate-100 object-cover"
+                          >
+                            Your browser does not support video playback.
+                          </video>
+                        ) : (
+                          <img
+                            src={`/api/admin/gallery/${selected.id}/media/${media.id}/file`}
+                            alt={
+                              media.alt_text ||
+                              media.filename ||
+                              "Gallery image"
+                            }
+                            loading="lazy"
+                            decoding="async"
+                            className="aspect-[4/3] w-full rounded-xl bg-slate-100 object-cover"
+                          />
+                        )}
 
                         <p className="mt-3 truncate text-sm font-semibold">
                           {media.filename}

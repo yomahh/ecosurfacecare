@@ -47,6 +47,10 @@ const categories = [
     value: "commercial",
     label: "Commercial Surface Cleaning",
   },
+  {
+    value: "silicone-replacement",
+    label: "Silicone Replacement",
+  },
 ];
 
 function StatusBadge({ status }) {

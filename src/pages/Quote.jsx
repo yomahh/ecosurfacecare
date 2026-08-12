@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import PageHero from "../components/ui/PageHero";
 import TurnstileWidget from "../components/security/TurnstileWidget";
 import { submitQuote } from "../services/api";
+import SEO from "../components/seo/SEO";
 
 export default function Quote() {
   const [status, setStatus] = useState("idle");
@@ -80,6 +81,11 @@ export default function Quote() {
 
   return (
     <>
+    <SEO
+      title="Request a Cleaning & Restoration Quote | EcoSurfaceCare"
+      description="Request a quote from EcoSurfaceCare for grout cleaning, grout recolouring, BioSteam cleaning and hard-surface restoration across the BB postcode area."
+      path="/request-a-quote"
+    />
       <PageHero
         eyebrow="Request a quote"
         title="Tell us about your cleaning or restoration project"
@@ -242,6 +248,10 @@ export default function Quote() {
 
                 <option value="biosteam">
                   BioSteam deep cleaning
+                </option>
+
+                <option value="silicone-replacement">
+                  Silicone replacement
                 </option>
 
                 <option value="surface-restoration">

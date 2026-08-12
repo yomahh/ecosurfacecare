@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import PageHero from "../components/ui/PageHero";
+import SEO from "../components/seo/SEO";
 
 const categoryLabels = {
   "grout-cleaning": "Grout Cleaning",
@@ -564,6 +565,11 @@ export default function OurWork() {
 
   return (
     <>
+    <SEO
+  title="Surface Cleaning & Restoration Projects | EcoSurfaceCare"
+  description="See real EcoSurfaceCare grout cleaning, recolouring, silicone replacement and surface restoration projects completed across Burnley, Blackburn and surrounding BB postcode areas."
+  path="/our-work"
+/>
       <PageHero
         eyebrow="Our Work"
         title="Real surface transformations and completed projects"

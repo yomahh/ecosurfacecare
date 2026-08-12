@@ -1,9 +1,14 @@
 import PageHero from "../components/ui/PageHero";
 import { BadgeCheck, Eye, HeartHandshake } from "lucide-react";
-
+import SEO from "../components/seo/SEO";
 export default function About() {
   return (
     <>
+    <SEO
+      title="About EcoSurfaceCare | Surface Care Specialists"
+      description="Learn about EcoSurfaceCare, an authorised GroutGleam and BioSteam partner providing specialist cleaning, grout recolouring and surface restoration services."
+      path="/about"
+    />
       <PageHero
         eyebrow="About EcoSurfaceCare"
         title="A specialist surface-care company built around quality and responsibility"

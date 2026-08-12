@@ -12,6 +12,7 @@ import { useCallback, useState } from "react";
 import PageHero from "../components/ui/PageHero";
 import TurnstileWidget from "../components/security/TurnstileWidget";
 import { submitContact } from "../services/api";
+import SEO from "../components/seo/SEO";
 
 const contactDetails = {
   phone: "07873 945808",
@@ -99,6 +100,11 @@ export default function Contact() {
 
   return (
     <>
+    <SEO
+      title="Contact EcoSurfaceCare | Burnley & Blackburn"
+      description="Contact EcoSurfaceCare for grout cleaning, recolouring, surface restoration and specialist cleaning enquiries across Burnley, Blackburn and the wider BB postcode area."
+      path="/contact"
+    />
       <PageHero
         eyebrow="Contact"
         title="How can we help?"

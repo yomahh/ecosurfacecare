@@ -4,8 +4,12 @@ import {
   useState,
 } from "react";
 import {
+  ChevronLeft,
+  ChevronRight,
   ImageOff,
+  Play,
   RefreshCw,
+  X,
 } from "lucide-react";
 import PageHero from "../components/ui/PageHero";
 
@@ -40,6 +44,7 @@ function friendlyCategory(value = "") {
 
 function ProjectMedia({
   project,
+  onOpen,
 }) {
   const media =
     project.media?.[0];
@@ -65,29 +70,263 @@ function ProjectMedia({
     media.media_type === "video"
   ) {
     return (
-      <video
-        src={media.url}
-        controls
-        preload="metadata"
-        className="aspect-square w-full bg-slate-100 object-cover"
+      <button
+        type="button"
+        onClick={onOpen}
+        className="group relative block aspect-square w-full overflow-hidden bg-slate-900"
+        aria-label={`Open ${project.title}`}
       >
-        Your browser does not support
-        video playback.
-      </video>
+        <video
+          src={media.url}
+          muted
+          playsInline
+          preload="metadata"
+          className="h-full w-full object-cover"
+        />
+
+        <span className="absolute inset-0 grid place-items-center bg-black/20 transition group-hover:bg-black/30">
+          <span className="grid h-16 w-16 place-items-center rounded-full bg-white/90 text-[#176B1C] shadow-lg">
+            <Play
+              size={26}
+              fill="currentColor"
+            />
+          </span>
+        </span>
+      </button>
     );
   }
 
   return (
-    <img
-      src={media.url}
-      alt={
-        media.alt_text ||
-        project.title
-      }
-      loading="lazy"
-      decoding="async"
-      className="aspect-square w-full object-cover"
-    />
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group block aspect-square w-full overflow-hidden bg-slate-100"
+      aria-label={`Open ${project.title}`}
+    >
+      <img
+        src={media.url}
+        alt={
+          media.alt_text ||
+          project.title
+        }
+        loading="lazy"
+        decoding="async"
+        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+      />
+    </button>
+  );
+}
+
+function ProjectLightbox({
+  project,
+  mediaIndex,
+  onClose,
+  onPrevious,
+  onNext,
+  onSelect,
+}) {
+  if (!project) {
+    return null;
+  }
+
+  const media =
+    project.media || [];
+
+  const activeMedia =
+    media[mediaIndex];
+
+  if (!activeMedia) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto bg-slate-950/95"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${project.title} gallery`}
+      onMouseDown={(event) => {
+        if (
+          event.target ===
+          event.currentTarget
+        ) {
+          onClose();
+        }
+      }}
+    >
+      <div className="mx-auto flex min-h-full w-full max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8">
+        {/* TOP BAR */}
+        <div className="flex items-center justify-between gap-4 text-white">
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-300">
+              {friendlyCategory(
+                project.category,
+              )}
+            </p>
+
+            <h2 className="mt-1 truncate text-lg font-bold sm:text-xl">
+              {project.title}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            aria-label="Close project gallery"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* MAIN MEDIA */}
+        <div className="relative mt-5 flex min-h-[55vh] flex-1 items-center justify-center overflow-hidden rounded-3xl bg-black">
+          {activeMedia.media_type ===
+          "video" ? (
+            <video
+              key={activeMedia.id}
+              src={activeMedia.url}
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              className="max-h-[72vh] max-w-full object-contain"
+            >
+              Your browser does not
+              support video playback.
+            </video>
+          ) : (
+            <img
+              key={activeMedia.id}
+              src={activeMedia.url}
+              alt={
+                activeMedia.alt_text ||
+                project.title
+              }
+              className="max-h-[72vh] max-w-full object-contain"
+            />
+          )}
+
+          {/* PREVIOUS / NEXT */}
+          {media.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={
+                  onPrevious
+                }
+                className="absolute left-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:left-5"
+                aria-label="Previous media"
+              >
+                <ChevronLeft
+                  size={28}
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={onNext}
+                className="absolute right-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:right-5"
+                aria-label="Next media"
+              >
+                <ChevronRight
+                  size={28}
+                />
+              </button>
+            </>
+          )}
+
+          {/* COUNTER */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/65 px-4 py-2 text-sm font-bold text-white backdrop-blur">
+            {mediaIndex + 1} /{" "}
+            {media.length}
+          </div>
+        </div>
+
+        {/* THUMBNAILS */}
+        {media.length > 1 && (
+          <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+            {media.map(
+              (item, index) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() =>
+                    onSelect(index)
+                  }
+                  className={[
+                    "relative h-20 w-24 shrink-0 overflow-hidden rounded-xl border-2 bg-slate-800 transition",
+                    index ===
+                    mediaIndex
+                      ? "border-emerald-400"
+                      : "border-transparent opacity-70 hover:opacity-100",
+                  ].join(" ")}
+                  aria-label={`View media ${
+                    index + 1
+                  }`}
+                >
+                  {item.media_type ===
+                  "video" ? (
+                    <>
+                      <video
+                        src={item.url}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="h-full w-full object-cover"
+                      />
+
+                      <span className="absolute inset-0 grid place-items-center bg-black/25 text-white">
+                        <Play
+                          size={20}
+                          fill="currentColor"
+                        />
+                      </span>
+                    </>
+                  ) : (
+                    <img
+                      src={item.url}
+                      alt=""
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </button>
+              ),
+            )}
+          </div>
+        )}
+
+        {/* PROJECT DETAILS */}
+        <div className="mt-4 rounded-2xl bg-white/5 p-5 text-white">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="font-bold text-emerald-300">
+              {friendlyCategory(
+                project.category,
+              )}
+            </p>
+
+            {project.location && (
+              <p className="text-slate-300">
+                {project.location}
+              </p>
+            )}
+          </div>
+
+          {project.description && (
+            <p className="mt-3 max-w-3xl leading-7 text-slate-300">
+              {project.description}
+            </p>
+          )}
+
+          {activeMedia.alt_text && (
+            <p className="mt-3 text-sm text-slate-400">
+              {activeMedia.alt_text}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -103,6 +342,16 @@ export default function OurWork() {
 
   const [active, setActive] =
     useState("All");
+
+  const [
+    selectedProject,
+    setSelectedProject,
+  ] = useState(null);
+
+  const [
+    selectedMediaIndex,
+    setSelectedMediaIndex,
+  ] = useState(0);
 
   async function loadProjects() {
     try {
@@ -150,9 +399,110 @@ export default function OurWork() {
     }
   }
 
+  function openProject(project) {
+    if (
+      !project.media ||
+      project.media.length === 0
+    ) {
+      return;
+    }
+
+    setSelectedProject(project);
+    setSelectedMediaIndex(0);
+  }
+
+  function closeProject() {
+    setSelectedProject(null);
+    setSelectedMediaIndex(0);
+  }
+
+  function showPreviousMedia() {
+    if (!selectedProject) {
+      return;
+    }
+
+    const total =
+      selectedProject.media.length;
+
+    setSelectedMediaIndex(
+      (current) =>
+        (current - 1 + total) %
+        total,
+    );
+  }
+
+  function showNextMedia() {
+    if (!selectedProject) {
+      return;
+    }
+
+    const total =
+      selectedProject.media.length;
+
+    setSelectedMediaIndex(
+      (current) =>
+        (current + 1) % total,
+    );
+  }
+
   useEffect(() => {
     loadProjects();
   }, []);
+
+  /*
+   * Keyboard controls and scroll lock
+   * while gallery is open.
+   */
+  useEffect(() => {
+    if (!selectedProject) {
+      return undefined;
+    }
+
+    const previousOverflow =
+      document.body.style.overflow;
+
+    document.body.style.overflow =
+      "hidden";
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        closeProject();
+      }
+
+      if (
+        event.key ===
+          "ArrowLeft" &&
+        selectedProject.media
+          .length > 1
+      ) {
+        showPreviousMedia();
+      }
+
+      if (
+        event.key ===
+          "ArrowRight" &&
+        selectedProject.media
+          .length > 1
+      ) {
+        showNextMedia();
+      }
+    }
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
+      );
+
+      document.body.style.overflow =
+        previousOverflow;
+    };
+  }, [selectedProject]);
 
   const categories =
     useMemo(() => {
@@ -186,11 +536,6 @@ export default function OurWork() {
       projects,
     ]);
 
-  /*
-   * If a category disappears after
-   * refreshing the gallery, return
-   * automatically to All.
-   */
   useEffect(() => {
     if (
       active !== "All" &&
@@ -313,6 +658,11 @@ export default function OurWork() {
                         project={
                           project
                         }
+                        onOpen={() =>
+                          openProject(
+                            project,
+                          )
+                        }
                       />
 
                       <div className="p-6">
@@ -346,15 +696,26 @@ export default function OurWork() {
 
                         {project.media
                           ?.length >
-                          1 && (
-                          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            {
-                              project
-                                .media
-                                .length
-                            }{" "}
-                            media items
-                          </p>
+                          0 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openProject(
+                                project,
+                              )
+                            }
+                            className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#176B1C] transition hover:text-[#0f5515]"
+                          >
+                            {project.media
+                              .length ===
+                            1
+                              ? "View photo"
+                              : `View all ${project.media.length} media items`}
+
+                            <span aria-hidden="true">
+                              →
+                            </span>
+                          </button>
                         )}
                       </div>
                     </article>
@@ -374,6 +735,23 @@ export default function OurWork() {
           )}
         </div>
       </section>
+
+      <ProjectLightbox
+        project={
+          selectedProject
+        }
+        mediaIndex={
+          selectedMediaIndex
+        }
+        onClose={closeProject}
+        onPrevious={
+          showPreviousMedia
+        }
+        onNext={showNextMedia}
+        onSelect={
+          setSelectedMediaIndex
+        }
+      />
     </>
   );
 }

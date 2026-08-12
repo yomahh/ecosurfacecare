@@ -17,6 +17,8 @@ const categoryLabels = {
   "grout-cleaning": "Grout Cleaning",
   "grout-recolouring":
     "Grout Recolouring",
+  "silicone-replacement":
+    "Silicone Replacement",
   biosteam:
     "BioSteam Deep Cleaning",
   "surface-restoration":
@@ -464,27 +466,39 @@ export default function OurWork() {
     document.body.style.overflow =
       "hidden";
 
+    const total =
+      selectedProject.media?.length ||
+      0;
+
     function handleKeyDown(event) {
       if (event.key === "Escape") {
-        closeProject();
+        setSelectedProject(null);
+        setSelectedMediaIndex(0);
+        return;
       }
 
       if (
         event.key ===
           "ArrowLeft" &&
-        selectedProject.media
-          .length > 1
+        total > 1
       ) {
-        showPreviousMedia();
+        setSelectedMediaIndex(
+          (current) =>
+            (current - 1 + total) %
+            total,
+        );
       }
 
       if (
         event.key ===
           "ArrowRight" &&
-        selectedProject.media
-          .length > 1
+        total > 1
       ) {
-        showNextMedia();
+        setSelectedMediaIndex(
+          (current) =>
+            (current + 1) %
+            total,
+        );
       }
     }
 

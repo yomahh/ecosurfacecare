@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
 import OurWork from "./pages/OurWork";
+import ProjectDetail from "./pages/ProjectDetail";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
@@ -34,7 +35,9 @@ export default function App() {
 
       <Routes>
         {/* PUBLIC WEBSITE */}
-        <Route element={<SiteLayout />}>
+        <Route
+          element={<SiteLayout />}
+        >
           <Route
             index
             element={<Home />}
@@ -47,12 +50,21 @@ export default function App() {
 
           <Route
             path="services/:slug"
-            element={<ServiceDetail />}
+            element={
+              <ServiceDetail />
+            }
           />
 
           <Route
             path="our-work"
             element={<OurWork />}
+          />
+
+          <Route
+            path="our-work/:slug"
+            element={
+              <ProjectDetail />
+            }
           />
 
           {/* Old gallery URL redirects to Our Work */}
@@ -103,7 +115,9 @@ export default function App() {
 
           <Route
             path="accessibility"
-            element={<Accessibility />}
+            element={
+              <Accessibility />
+            }
           />
 
           <Route
@@ -120,12 +134,16 @@ export default function App() {
 
         <Route
           path="/admin/dashboard"
-          element={<AdminDashboard />}
+          element={
+            <AdminDashboard />
+          }
         />
 
         <Route
           path="/admin/gallery"
-          element={<AdminGallery />}
+          element={
+            <AdminGallery />
+          }
         />
 
         {/* DEVELOPMENT UI KIT */}

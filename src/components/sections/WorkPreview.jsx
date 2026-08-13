@@ -14,20 +14,28 @@ import SectionHeading from "../ui/SectionHeading";
 
 const categoryLabels = {
   "grout-cleaning": "Grout Cleaning",
+
   "grout-recolouring":
     "Grout Recolouring",
+
   "silicone-replacement":
     "Silicone Replacement",
+
   biosteam:
     "BioSteam Deep Cleaning",
+
   "surface-restoration":
     "Tile & Surface Restoration",
+
   bathroom:
     "Bathroom & Shower Restoration",
+
   kitchen:
     "Kitchen Surface Care",
+
   floor:
     "Floor Cleaning & Maintenance",
+
   commercial:
     "Commercial Surface Cleaning",
 };
@@ -58,16 +66,18 @@ export default function WorkPreview() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        "/api/gallery",
-        {
-          method: "GET",
-          headers: {
-            Accept:
-              "application/json",
+      const response =
+        await fetch(
+          "/api/gallery",
+          {
+            method: "GET",
+
+            headers: {
+              Accept:
+                "application/json",
+            },
           },
-        },
-      );
+        );
 
       const data =
         await response.json();
@@ -114,7 +124,12 @@ export default function WorkPreview() {
         .slice(0, 3)
         .map((project) => ({
           id: project.id,
-          title: project.title,
+
+          slug:
+            project.slug,
+
+          title:
+            project.title,
 
           category:
             friendlyCategory(
@@ -127,6 +142,9 @@ export default function WorkPreview() {
 
           image:
             project.media[0].url,
+
+          to:
+            `/our-work/${project.slug}`,
         }));
     }, [projects]);
 
@@ -187,6 +205,7 @@ export default function WorkPreview() {
                 <RefreshCw
                   size={17}
                 />
+
                 Try again
               </button>
             </div>

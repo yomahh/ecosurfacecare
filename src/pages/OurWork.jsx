@@ -3,6 +3,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { Link } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,25 +12,35 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
+
 import PageHero from "../components/ui/PageHero";
 import SEO from "../components/seo/SEO";
 
 const categoryLabels = {
-  "grout-cleaning": "Grout Cleaning",
+  "grout-cleaning":
+    "Grout Cleaning",
+
   "grout-recolouring":
     "Grout Recolouring",
+
   "silicone-replacement":
     "Silicone Replacement",
+
   biosteam:
     "BioSteam Deep Cleaning",
+
   "surface-restoration":
     "Tile & Surface Restoration",
+
   bathroom:
     "Bathroom & Shower Restoration",
+
   kitchen:
     "Kitchen Surface Care",
+
   floor:
     "Floor Cleaning & Maintenance",
+
   commercial:
     "Commercial Surface Cleaning",
 };
@@ -318,13 +329,17 @@ function ProjectLightbox({
 
           {project.description && (
             <p className="mt-3 max-w-3xl leading-7 text-slate-300">
-              {project.description}
+              {
+                project.description
+              }
             </p>
           )}
 
           {activeMedia.alt_text && (
             <p className="mt-3 text-sm text-slate-400">
-              {activeMedia.alt_text}
+              {
+                activeMedia.alt_text
+              }
             </p>
           )}
         </div>
@@ -361,16 +376,18 @@ export default function OurWork() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        "/api/gallery",
-        {
-          method: "GET",
-          headers: {
-            Accept:
-              "application/json",
+      const response =
+        await fetch(
+          "/api/gallery",
+          {
+            method: "GET",
+
+            headers: {
+              Accept:
+                "application/json",
+            },
           },
-        },
-      );
+        );
 
       const data =
         await response.json();
@@ -410,7 +427,10 @@ export default function OurWork() {
       return;
     }
 
-    setSelectedProject(project);
+    setSelectedProject(
+      project,
+    );
+
     setSelectedMediaIndex(0);
   }
 
@@ -429,7 +449,9 @@ export default function OurWork() {
 
     setSelectedMediaIndex(
       (current) =>
-        (current - 1 + total) %
+        (current -
+          1 +
+          total) %
         total,
     );
   }
@@ -444,7 +466,8 @@ export default function OurWork() {
 
     setSelectedMediaIndex(
       (current) =>
-        (current + 1) % total,
+        (current + 1) %
+        total,
     );
   }
 
@@ -453,8 +476,9 @@ export default function OurWork() {
   }, []);
 
   /*
-   * Keyboard controls and scroll lock
-   * while gallery is open.
+   * Keyboard controls and
+   * scroll lock while the
+   * gallery is open.
    */
   useEffect(() => {
     if (!selectedProject) {
@@ -468,13 +492,23 @@ export default function OurWork() {
       "hidden";
 
     const total =
-      selectedProject.media?.length ||
-      0;
+      selectedProject.media
+        ?.length || 0;
 
-    function handleKeyDown(event) {
-      if (event.key === "Escape") {
-        setSelectedProject(null);
-        setSelectedMediaIndex(0);
+    function handleKeyDown(
+      event,
+    ) {
+      if (
+        event.key === "Escape"
+      ) {
+        setSelectedProject(
+          null,
+        );
+
+        setSelectedMediaIndex(
+          0,
+        );
+
         return;
       }
 
@@ -485,7 +519,9 @@ export default function OurWork() {
       ) {
         setSelectedMediaIndex(
           (current) =>
-            (current - 1 + total) %
+            (current -
+              1 +
+              total) %
             total,
         );
       }
@@ -544,32 +580,30 @@ export default function OurWork() {
 
       return projects.filter(
         (project) =>
-          project.category === active,
+          project.category ===
+          active,
       );
-    }, [
-      active,
-      projects,
-    ]);
+    }, [active, projects]);
 
   useEffect(() => {
     if (
       active !== "All" &&
-      !categories.includes(active)
+      !categories.includes(
+        active,
+      )
     ) {
       setActive("All");
     }
-  }, [
-    active,
-    categories,
-  ]);
+  }, [active, categories]);
 
   return (
     <>
-    <SEO
-  title="Surface Cleaning & Restoration Projects | EcoSurfaceCare"
-  description="See real EcoSurfaceCare grout cleaning, recolouring, silicone replacement and surface restoration projects completed across Burnley, Blackburn and surrounding BB postcode areas."
-  path="/our-work"
-/>
+      <SEO
+        title="Surface Cleaning & Restoration Projects | EcoSurfaceCare"
+        description="See real EcoSurfaceCare grout cleaning, recolouring, silicone replacement and surface restoration projects completed across Burnley, Blackburn and surrounding BB postcode areas."
+        path="/our-work"
+      />
+
       <PageHero
         eyebrow="Our Work"
         title="Real surface transformations and completed projects"
@@ -621,14 +655,16 @@ export default function OurWork() {
               />
 
               <h2 className="mt-4 text-xl font-bold">
-                New projects coming soon
+                New projects coming
+                soon
               </h2>
 
               <p className="mx-auto mt-2 max-w-xl text-slate-500">
                 We&apos;ll be adding
-                completed EcoSurfaceCare
-                projects here as they are
-                published.
+                completed
+                EcoSurfaceCare
+                projects here as they
+                are published.
               </p>
             </div>
           ) : (
@@ -638,7 +674,9 @@ export default function OurWork() {
                 {categories.map(
                   (category) => (
                     <button
-                      key={category}
+                      key={
+                        category
+                      }
                       type="button"
                       onClick={() =>
                         setActive(
@@ -714,29 +752,41 @@ export default function OurWork() {
                           </p>
                         )}
 
-                        {project.media
-                          ?.length >
-                          0 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              openProject(
-                                project,
-                              )
-                            }
-                            className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#176B1C] transition hover:text-[#0f5515]"
-                          >
-                            {project.media
-                              .length ===
-                            1
-                              ? "View photo"
-                              : `View all ${project.media.length} media items`}
+                        <div className="mt-5 flex flex-wrap items-center gap-4">
+                          {project.media
+                            ?.length >
+                            0 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openProject(
+                                  project,
+                                )
+                              }
+                              className="inline-flex items-center gap-2 text-sm font-bold text-[#176B1C] transition hover:text-[#0f5515]"
+                            >
+                              {project
+                                .media
+                                .length ===
+                              1
+                                ? "View photo"
+                                : `View all ${project.media.length} media items`}
+                            </button>
+                          )}
 
-                            <span aria-hidden="true">
+                          <Link
+                            to={`/our-work/${project.slug}`}
+                            className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 transition hover:text-[#176B1C]"
+                          >
+                            View project
+
+                            <span
+                              aria-hidden="true"
+                            >
                               →
                             </span>
-                          </button>
-                        )}
+                          </Link>
+                        </div>
                       </div>
                     </article>
                   ),
@@ -746,8 +796,9 @@ export default function OurWork() {
               {visibleProjects.length ===
                 0 && (
                 <div className="mt-10 rounded-3xl bg-slate-50 p-8 text-center text-slate-500">
-                  No published projects
-                  are available in this
+                  No published
+                  projects are
+                  available in this
                   category yet.
                 </div>
               )}
@@ -763,11 +814,15 @@ export default function OurWork() {
         mediaIndex={
           selectedMediaIndex
         }
-        onClose={closeProject}
+        onClose={
+          closeProject
+        }
         onPrevious={
           showPreviousMedia
         }
-        onNext={showNextMedia}
+        onNext={
+          showNextMedia
+        }
         onSelect={
           setSelectedMediaIndex
         }

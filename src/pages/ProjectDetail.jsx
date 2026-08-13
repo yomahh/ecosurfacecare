@@ -18,6 +18,7 @@ import {
 } from "react-router-dom";
 
 import SEO from "../components/seo/SEO";
+import ProjectSchema from "../components/seo/ProjectSchema";
 import PageHero from "../components/ui/PageHero";
 import { galleryImageUrl } from "../utils/galleryImage";
 
@@ -507,18 +508,22 @@ export default function ProjectDetail() {
 
   return (
     <>
-      <SEO
-        title={seoTitle}
-        description={
-          seoDescription
-        }
-        path={`/our-work/${project.slug}`}
-        image={
-          project.media?.[0]?.url
-            ? `https://ecosurfacecare.co.uk${project.media[0].url}`
-            : undefined
-        }
-      />
+  <SEO
+    title={seoTitle}
+    description={
+      seoDescription
+    }
+    path={`/our-work/${project.slug}`}
+    image={
+      project.media?.[0]?.url
+        ? `https://ecosurfacecare.co.uk${project.media[0].url}`
+        : undefined
+    }
+  />
+
+  <ProjectSchema
+    project={project}
+  />
 
       <PageHero
         eyebrow={category}

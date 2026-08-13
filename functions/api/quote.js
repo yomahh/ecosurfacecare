@@ -802,22 +802,16 @@ export async function onRequestPost(context) {
     /*
      * Server-side log
      */
-    console.log(
-      "New EcoSurfaceCare quote request",
-      {
-        reference,
-        name,
-        email,
-        phone,
-        postcode,
-        propertyType,
-        service,
-        photoCount:
-          uploadedPhotos.length,
-        databaseStored: true,
-        turnstileVerified: true,
-      },
-    );
+   console.log(
+  "EcoSurfaceCare quote stored successfully",
+  {
+    reference,
+    photoCount:
+      uploadedPhotos.length,
+    databaseStored: true,
+    turnstileVerified: true,
+  },
+);
 
     /*
      * Successful response

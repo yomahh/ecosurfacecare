@@ -421,14 +421,11 @@ export async function onRequestPost(context) {
      * Server log
      */
     console.log(
-      "New EcoSurfaceCare contact enquiry",
-      {
-        name,
-        email,
-        phone: phone || "Not provided",
-        turnstileVerified: true,
-      },
-    );
+  "EcoSurfaceCare contact enquiry sent successfully",
+  {
+    turnstileVerified: true,
+  },
+);
 
     /*
      * Successful response

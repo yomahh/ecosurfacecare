@@ -20,11 +20,6 @@ const staticPublicRoutes = new Set([
   "/admin/dashboard",
   "/admin/gallery",
 
-  /*
-   * Development route currently
-   * present in App.jsx.
-   */
-  "/ui-kit",
 
   /*
    * Legacy React route.

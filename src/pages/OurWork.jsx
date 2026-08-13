@@ -15,6 +15,7 @@ import {
 
 import PageHero from "../components/ui/PageHero";
 import SEO from "../components/seo/SEO";
+import { galleryImageUrl } from "../utils/galleryImage";
 
 const categoryLabels = {
   "grout-cleaning":
@@ -118,15 +119,21 @@ function ProjectMedia({
       aria-label={`Open ${project.title}`}
     >
       <img
-        src={media.url}
-        alt={
-          media.alt_text ||
-          project.title
-        }
-        loading="lazy"
-        decoding="async"
-        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-      />
+  src={galleryImageUrl(
+    media.url,
+    {
+      width: 900,
+      quality: 80,
+    },
+  )}
+  alt={
+    media.alt_text ||
+    project.title
+  }
+  loading="lazy"
+  decoding="async"
+  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+/>
     </button>
   );
 }
@@ -211,14 +218,20 @@ function ProjectLightbox({
             </video>
           ) : (
             <img
-              key={activeMedia.id}
-              src={activeMedia.url}
-              alt={
-                activeMedia.alt_text ||
-                project.title
-              }
-              className="max-h-[72vh] max-w-full object-contain"
-            />
+  key={activeMedia.id}
+  src={galleryImageUrl(
+    activeMedia.url,
+    {
+      width: 1600,
+      quality: 85,
+    },
+  )}
+  alt={
+    activeMedia.alt_text ||
+    project.title
+  }
+  className="max-h-[72vh] max-w-full object-contain"
+/>
           )}
 
           {/* PREVIOUS / NEXT */}
@@ -299,11 +312,18 @@ function ProjectLightbox({
                     </>
                   ) : (
                     <img
-                      src={item.url}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover"
-                    />
+  src={galleryImageUrl(
+    item.url,
+    {
+      width: 300,
+      quality: 75,
+    },
+  )}
+  alt=""
+  loading="lazy"
+  decoding="async"
+  className="h-full w-full object-cover"
+/>
                   )}
                 </button>
               ),

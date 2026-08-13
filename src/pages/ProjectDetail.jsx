@@ -19,6 +19,7 @@ import {
 
 import SEO from "../components/seo/SEO";
 import PageHero from "../components/ui/PageHero";
+import { galleryImageUrl } from "../utils/galleryImage";
 
 const categoryLabels = {
   "grout-cleaning":
@@ -130,15 +131,22 @@ function Lightbox({
               support video playback.
             </video>
           ) : (
-            <img
-              key={activeMedia.id}
-              src={activeMedia.url}
-              alt={
-                activeMedia.alt_text ||
-                project.title
-              }
-              className="max-h-[72vh] max-w-full object-contain"
-            />
+
+              <img
+  key={activeMedia.id}
+  src={galleryImageUrl(
+    activeMedia.url,
+    {
+      width: 1600,
+      quality: 85,
+    },
+  )}
+  alt={
+    activeMedia.alt_text ||
+    project.title
+  }
+  className="max-h-[72vh] max-w-full object-contain"
+/>
           )}
 
           {media.length > 1 && (
@@ -218,11 +226,18 @@ function Lightbox({
                     </>
                   ) : (
                     <img
-                      src={item.url}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover"
-                    />
+  src={galleryImageUrl(
+    item.url,
+    {
+      width: 300,
+      quality: 75,
+    },
+  )}
+  alt=""
+  loading="lazy"
+  decoding="async"
+  className="h-full w-full object-cover"
+/>
                   )}
                 </button>
               ),
@@ -592,9 +607,16 @@ export default function ProjectDetail() {
                       </>
                     ) : (
                       <img
-                        src={
-                          media.url
-                        }
+                        src={galleryImageUrl(
+    media.url,
+    {
+      width:
+        index === 0
+          ? 1200
+          : 900,
+      quality: 80,
+    },
+  )}
                         alt={
                           media.alt_text ||
                           project.title

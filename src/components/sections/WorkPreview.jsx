@@ -11,6 +11,7 @@ import {
 import Button from "../ui/Button";
 import ProjectCard from "../ui/ProjectCard";
 import SectionHeading from "../ui/SectionHeading";
+import { galleryImageUrl } from "../../utils/galleryImage";
 
 const categoryLabels = {
   "grout-cleaning": "Grout Cleaning",
@@ -141,7 +142,15 @@ export default function WorkPreview() {
             "Lancashire",
 
           image:
-            project.media[0].url,
+  project.media[0].media_type === "image"
+    ? galleryImageUrl(
+        project.media[0].url,
+        {
+          width: 900,
+          quality: 80,
+        },
+      )
+    : project.media[0].url,
 
           to:
             `/our-work/${project.slug}`,

@@ -6,7 +6,7 @@ export default function Cookies() {
       <PageHero
         eyebrow="Legal information"
         title="Cookie Policy"
-        text="Information about how EcoSurfaceCare uses cookies and similar technologies on this website."
+        text="Information about cookies and similar technologies used by the EcoSurfaceCare website."
       />
 
       <section className="pt-10 pb-16 lg:pt-12 lg:pb-20">
@@ -18,16 +18,16 @@ export default function Cookies() {
               </h2>
 
               <p className="mt-4 leading-8">
-                Cookies are small text files that websites may store on your
-                device. They can be used to provide essential website
-                functionality, remember preferences, improve security or
-                understand how a website is being used.
+                Cookies are small text files that websites may place on your
+                device. Similar technologies can also be used to provide
+                website functionality, maintain security, remember settings
+                or understand technical website activity.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-heading">
-                2. How EcoSurfaceCare uses cookies
+                2. How EcoSurfaceCare uses these technologies
               </h2>
 
               <p className="mt-4 leading-8">
@@ -36,49 +36,63 @@ export default function Cookies() {
               </p>
 
               <p className="mt-4 leading-8">
-                At present, this website does not use cookies for advertising
-                or behavioural tracking.
+                The public website does not use cookies for personalised
+                advertising or behavioural advertising.
               </p>
 
               <p className="mt-4 leading-8">
-                Essential technologies may be used where necessary for
-                security, website functionality, form protection or other
-                services required for the website to operate correctly.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-bold text-heading">
-                3. Essential cookies
-              </h2>
-
-              <p className="mt-4 leading-8">
-                Essential cookies or similar technologies are used only where
-                necessary to provide a service you have requested or to
-                maintain the security and operation of the website.
-              </p>
-
-              <p className="mt-4 leading-8">
-                These technologies do not require consent where they are
-                strictly necessary for the operation of the service.
+                Security and technical technologies may be used where
+                necessary to protect the website, prevent automated abuse,
+                process forms and maintain reliable website operation.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-heading">
-                4. Analytics and advertising
+                3. Strictly necessary technologies
               </h2>
 
               <p className="mt-4 leading-8">
-                EcoSurfaceCare does not currently use optional analytics,
-                advertising or behavioural tracking cookies on this website.
+                Strictly necessary technologies may be used where required
+                to provide a service requested by the user or to protect the
+                security and operation of the website.
               </p>
 
               <p className="mt-4 leading-8">
-                If optional analytics, advertising or other non-essential
-                technologies are introduced in the future, this policy will
-                be updated and an appropriate consent mechanism will be
-                provided where required.
+                These may include technologies used by Cloudflare to provide
+                security, traffic protection and form-abuse prevention,
+                including Cloudflare Turnstile.
+              </p>
+
+              <p className="mt-4 leading-8">
+                Strictly necessary technologies do not normally require
+                consent where their use is essential to provide the requested
+                service or maintain website security.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-heading">
+                4. Analytics
+              </h2>
+
+              <p className="mt-4 leading-8">
+                EcoSurfaceCare may receive limited technical information
+                about website traffic and performance through its hosting
+                and security infrastructure.
+              </p>
+
+              <p className="mt-4 leading-8">
+                We do not use this website to build advertising profiles of
+                visitors or to carry out behavioural advertising.
+              </p>
+
+              <p className="mt-4 leading-8">
+                If we introduce optional analytics or other non-essential
+                tracking technologies that require consent in the future,
+                this policy will be updated and an appropriate consent
+                mechanism will be provided before those technologies are
+                used where required.
               </p>
             </section>
 
@@ -88,15 +102,20 @@ export default function Cookies() {
               </h2>
 
               <p className="mt-4 leading-8">
-                Some website features may rely on third-party services for
-                functions such as security, form processing, email delivery
-                or hosting.
+                EcoSurfaceCare uses third-party infrastructure and service
+                providers to operate and secure the website.
               </p>
 
               <p className="mt-4 leading-8">
-                Where a third-party service introduces cookies or similar
-                technologies that require consent, we will provide appropriate
-                information and controls before those technologies are used.
+                Cloudflare provides website delivery, security and
+                form-protection services. Other service providers may be
+                involved in processing information submitted through the
+                website, such as transactional email delivery.
+              </p>
+
+              <p className="mt-4 leading-8">
+                Third-party services operate according to their own
+                technical and privacy practices.
               </p>
             </section>
 
@@ -111,8 +130,9 @@ export default function Cookies() {
               </p>
 
               <p className="mt-4 leading-8">
-                Blocking essential technologies may prevent some website
-                features from working correctly.
+                Blocking technologies that are necessary for website
+                security or functionality may prevent some features,
+                including protected forms, from working correctly.
               </p>
             </section>
 
@@ -122,9 +142,9 @@ export default function Cookies() {
               </h2>
 
               <p className="mt-4 leading-8">
-                We may update this Cookie Policy if the technologies or
-                services used by the EcoSurfaceCare website change. The latest
-                version will always be available on this page.
+                We may update this Cookie Policy when the technologies or
+                services used by the EcoSurfaceCare website change. The
+                latest version will be published on this page.
               </p>
             </section>
 
